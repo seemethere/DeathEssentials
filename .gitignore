@@ -9,5 +9,4 @@
 *.iws
 .idea/
 
-bin/
 target/
