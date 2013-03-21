@@ -1,0 +1,15 @@
+#======================================================
+# This section defines what modules are enabled at start
+# by default all modules are disabled but they can be
+# enabled either in game or here from the start
+#
+# true = Enabled from start
+# false = Disabled from start
+modules:
+    TestModule: true
+
+
+#Do not touch this variable it is used to check if your
+#config needs updating by the plugin
+version: 1.0
+#======================================================

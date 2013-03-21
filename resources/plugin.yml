@@ -1,0 +1,6 @@
+name: DeathEssentials
+version: 1.0
+main: com.github.seemethere.DeathEssentials.DeathEssentialsPlugin
+author: seemethere
+depend: [Vault]
+softdepend: [WorldGuard]
