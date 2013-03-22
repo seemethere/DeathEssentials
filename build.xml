@@ -1,22 +1,23 @@
 <project name="DeathEssentials" default="build">
     <property name="build.version" value="dev-unversioned"/>
     <target name="build">
+        <delete dir="bin"/>
         <mkdir dir="build"/>
         <javac srcdir="src" destdir="build" debug="on">
             <classpath>
-                <fileset dir="../DeathEssentials/lib">
+                <fileset dir="lib">
                     <include name="*.jar"/>
                 </fileset>
             </classpath>
         </javac>
         <copy todir="build">
-            <fileset dir="../DeathEssentials/resources/">
+            <fileset dir="resources">
                 <include name="*.yml"/>
                 <include name="**/*.yml"/>
             </fileset>
         </copy>
         <replace file="build/plugin.yml" token="$version$" value="${build.version}"/>
-        <jar jarfile="../DeathEssentials/bin/DeathEssentials.jar" basedir="build"/>
+        <jar jarfile="bin/DeathEssentials.jar" basedir="build"/>
         <delete dir="build"/>
     </target>
 </project>
