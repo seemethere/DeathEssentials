@@ -1,7 +1,6 @@
-package com.github.seemethere.DeathEssentials.utils;
+package com.github.seemethere.DeathEssentials.utils.commonutils;
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -15,17 +14,17 @@ import java.util.logging.Logger;
  * @author seemethere
  */
 
-public class ConfigAccessor {
+public class CustomConfig {
 
     private static File configFile;
-    private static FileConfiguration fileConfiguration;
-    public final File moduleFolder;
+    private static YamlConfiguration fileConfiguration;
+    private final File moduleFolder;
     private final String fileName;
     private final DeathEssentialsPlugin plugin;
     private final Logger logger;
     private final String module;
 
-    public ConfigAccessor(DeathEssentialsPlugin plugin, String fileName, String dir, String module) {
+    public CustomConfig(DeathEssentialsPlugin plugin, String fileName, String dir, String module) {
         if (plugin == null)
             throw new IllegalArgumentException("plugin cannot be null");
         if (!plugin.isInitialized())
@@ -58,11 +57,15 @@ public class ConfigAccessor {
         }
     }
 
-    public FileConfiguration getConfig() {
+    public YamlConfiguration getConfig() {
         if (fileConfiguration == null) {
             this.reloadConfig();
         }
         return fileConfiguration;
+    }
+
+    public File getModuleFolder() {
+        return moduleFolder;
     }
 
     public void saveConfig() {

@@ -1,11 +1,13 @@
-package com.github.seemethere.DeathEssentials.utils.module;
+package com.github.seemethere.DeathEssentials.utils;
 
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.modules.DeathCharge;
 import com.github.seemethere.DeathEssentials.modules.InternalCommands;
 import com.github.seemethere.DeathEssentials.modules.TestModule;
-import com.github.seemethere.DeathEssentials.utils.commands.CommandManager;
+import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
+import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
+import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
@@ -13,10 +15,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class ModuleManager {
-    private static DeathEssentialsPlugin plugin;
-    private static CommandManager commandManager;
-    private static ModuleDependencies dependencies;
-    private Map<String, ModuleDE> moduleList;
+    private DeathEssentialsPlugin plugin;
+    private CommandManager commandManager;
+    private ModuleDependencies dependencies;
+    private Map<String, ModuleBase> moduleList;
     private Map<String, Boolean> InitialStatuses;
     private Logger logger;
 
@@ -25,7 +27,7 @@ public class ModuleManager {
         logger = plugin.getLogger();
         commandManager = new CommandManager(plugin);
         dependencies = plugin.getDependencies();
-        moduleList = new HashMap<String, ModuleDE>();
+        moduleList = new HashMap<String, ModuleBase>();
         InitialStatuses = new HashMap<String, Boolean>();
         setModuleList();
         setInitialStatus();
@@ -36,9 +38,10 @@ public class ModuleManager {
         addModule(new InternalCommands());
         addModule(new TestModule());
         addModule(new DeathCharge());
+        //addModule(new DeathBan());
     }
 
-    private void addModule(ModuleDE module) {
+    private void addModule(ModuleBase module) {
         if (module.getClass().isAnnotationPresent(ModuleInfo.class))
             moduleList.put(module.getClass().getAnnotation(ModuleInfo.class).name(), module);
         else
@@ -62,7 +65,7 @@ public class ModuleManager {
      * @param name Name of module to find
      * @return Module itself or null if none found
      */
-    public ModuleDE findModule(String name) {
+    public ModuleBase findModule(String name) {
         for (String s : moduleList.keySet())
             if (s.equalsIgnoreCase(name))
                 return moduleList.get(s);
@@ -82,7 +85,7 @@ public class ModuleManager {
     /**
      * @return The list of modules
      */
-    public Map<String, ModuleDE> getModuleList() {
+    public Map<String, ModuleBase> getModuleList() {
         return moduleList;
     }
 
@@ -107,7 +110,7 @@ public class ModuleManager {
      */
     public int plugModule(String name) {
         if (findModule(name) != null) {
-            ModuleDE module = findModule(name);
+            ModuleBase module = findModule(name);
             if (module.isEnabled())
                 return 1;
             ModuleInfo info = getModuleInfo(name);
@@ -144,7 +147,7 @@ public class ModuleManager {
      */
     public int unplugModule(String name, boolean last) {
         if (findModule(name) != null) {
-            ModuleDE module = findModule(name);
+            ModuleBase module = findModule(name);
             if (!module.isEnabled())
                 return 1;
             ModuleInfo info = getModuleInfo(name);

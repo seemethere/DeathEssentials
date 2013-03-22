@@ -1,11 +1,11 @@
 package com.github.seemethere.DeathEssentials.modules;
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
-import com.github.seemethere.DeathEssentials.utils.ConfigAccessor;
+import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
-import com.github.seemethere.DeathEssentials.utils.module.ModuleDE;
+import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
@@ -22,19 +22,21 @@ import java.util.logging.Logger;
         description = "Module used to test everything",
         WorldGuard = true,
         Economy = true)
-public class TestModule implements ModuleDE, Listener {
+public class TestModule implements ModuleBase, Listener {
     private static boolean status = false;
-    private static ConfigAccessor configAcc;
+    private static CustomConfig configAcc;
     private static FileConfiguration config;
     private static String MODULE_NAME;
     private static Logger logger;
 
-    public boolean isEnabled() { return status; }
+    public boolean isEnabled() {
+        return status;
+    }
 
     public void enableModule(DeathEssentialsPlugin plugin, String name) {
         status = true;
         logger = plugin.getLogger();
-        configAcc = new ConfigAccessor(plugin, "TestModule.yml", "/TestModule", name);
+        configAcc = new CustomConfig(plugin, "TestModule.yml", "/TestModule", name);
         config = configAcc.getConfig();
         MODULE_NAME = "[" + name + "] ";
     }

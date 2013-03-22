@@ -1,5 +1,5 @@
 name: DeathEssentials
-version: 1.0
+version: $version$
 main: com.github.seemethere.DeathEssentials.DeathEssentialsPlugin
 author: seemethere
 depend: [Vault]

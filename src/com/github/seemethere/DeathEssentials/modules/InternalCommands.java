@@ -4,7 +4,7 @@ import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
-import com.github.seemethere.DeathEssentials.utils.module.ModuleDE;
+import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
 import org.bukkit.ChatColor;
 
@@ -13,14 +13,16 @@ import java.util.Map;
 @ModuleInfo(name = "InternalCommands",
         description = "Internal commands to control modules",
         NoDisable = true)
-public class InternalCommands implements ModuleDE {
+public class InternalCommands implements ModuleBase {
     //Permission node for admin commands
     private static final String ADMIN_PERM = "deathessentials.admin";
+    private static final String PLUGIN_NAME = ChatColor.GRAY + "[DeathEssentials] " + ChatColor.AQUA;
     private static boolean status = false;
-    private static String PLUGIN_NAME = ChatColor.GRAY + "[DeathEssentials] " + ChatColor.AQUA;
     private DeathEssentialsPlugin plugin;
 
-    public boolean isEnabled() { return status; }
+    public boolean isEnabled() {
+        return status;
+    }
 
     public void enableModule(DeathEssentialsPlugin plugin, String name) {
         status = true;
@@ -36,8 +38,8 @@ public class InternalCommands implements ModuleDE {
             aliases = "de, death, module",
             description = "Gives version and author",
             AllowConsole = true)
-    public void cmd_internal(CallInfo info) {
-        info.reply("%sv%.1f &7by seemethere", PLUGIN_NAME, plugin.getVersion());
+    public void cmd_internal(CallInfo call) {
+        call.reply("%sv%.1f &7by seemethere", PLUGIN_NAME, plugin.getVersion());
     }
 
     @SUB_CMD(parent = "deathessentials",
@@ -47,20 +49,20 @@ public class InternalCommands implements ModuleDE {
             description = "Enables modules",
             permission = ADMIN_PERM,
             AllowConsole = true)
-    public void sub_enable(CallInfo info) {
-        switch (plugin.getModuleManager().plugModule(info.args[1])) {
+    public void sub_enable(CallInfo call) {
+        switch (plugin.getModuleManager().plugModule(call.args[1])) {
             case 3:
-                info.reply("%s%s&4 had a dependency error! See console for details!", PLUGIN_NAME, info.args[1]);
+                call.reply("%s%s&4 had a dependency error! See console for details!", PLUGIN_NAME, call.args[1]);
                 break;
             case 2:
-                info.reply("%s%s &4not found!", PLUGIN_NAME, info.args[1]);
+                call.reply("%s%s &4not found!", PLUGIN_NAME, call.args[1]);
                 break;
             case 1:
-                info.reply("%s%s&4 is already enabled!",
-                        PLUGIN_NAME, info.args[1]);
+                call.reply("%s%s&4 is already enabled!",
+                        PLUGIN_NAME, call.args[1]);
                 break;
             case 0:
-                info.reply("%s%s&a has been enabled!", PLUGIN_NAME, info.args[1]);
+                call.reply("%s%s&a has been enabled!", PLUGIN_NAME, call.args[1]);
                 break;
         }
     }
@@ -72,20 +74,20 @@ public class InternalCommands implements ModuleDE {
             description = "Enables modules",
             permission = ADMIN_PERM,
             AllowConsole = true)
-    public void sub_disable(CallInfo info) {
-        switch (plugin.getModuleManager().unplugModule(info.args[1])) {
+    public void sub_disable(CallInfo call) {
+        switch (plugin.getModuleManager().unplugModule(call.args[1])) {
             case 3:
-                info.reply("%s%s&4 cannot be disabled!", PLUGIN_NAME, info.args[1]);
+                call.reply("%s%s&4 cannot be disabled!", PLUGIN_NAME, call.args[1]);
                 break;
             case 2:
-                info.reply("%s%s &4not found!", PLUGIN_NAME, info.args[1]);
+                call.reply("%s%s &4not found!", PLUGIN_NAME, call.args[1]);
                 break;
             case 1:
-                info.reply("%s%s&4 is already disabled!",
-                        PLUGIN_NAME, info.args[1]);
+                call.reply("%s%s&4 is already disabled!",
+                        PLUGIN_NAME, call.args[1]);
                 break;
             case 0:
-                info.reply("%s%s&a has been disabled!", PLUGIN_NAME, info.args[1]);
+                call.reply("%s%s&a has been disabled!", PLUGIN_NAME, call.args[1]);
                 break;
         }
     }
@@ -111,7 +113,8 @@ public class InternalCommands implements ModuleDE {
                     + (moduleinfo.Permissions() ? "   - Permissions \n" : "")
                     + (moduleinfo.WorldGuard() ? "    - WorldGuard" : "");
             call.reply("&3Dependencies: \n&6%s", dependencies.equalsIgnoreCase("") ? "None!" : dependencies);
-        }
+        } else
+            call.reply("%s%s &4not found!", PLUGIN_NAME, call.args[1]);
     }
 
     @SUB_CMD(parent = "deathessentials",
@@ -120,11 +123,11 @@ public class InternalCommands implements ModuleDE {
             description = "Lists all modules",
             permission = ADMIN_PERM,
             AllowConsole = true)
-    public void sub_list(CallInfo info) {
-        info.reply("&7-=-=- &6Modules &7-=-=-");
-        Map<String, ModuleDE> modules = plugin.getModuleList();
+    public void sub_list(CallInfo call) {
+        call.reply("&7-=-=- &6Modules &7-=-=-");
+        Map<String, ModuleBase> modules = plugin.getModuleList();
         for (String s : modules.keySet()) {
-            info.reply("&7%s: %5s", s,
+            call.reply("&7%s: %5s", s,
                     modules.get(s).isEnabled() ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled");
         }
     }

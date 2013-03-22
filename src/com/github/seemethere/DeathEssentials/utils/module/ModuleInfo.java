@@ -42,4 +42,9 @@ public @interface ModuleInfo {
      * @return True/False if this module can be disabled
      */
     boolean NoDisable() default false;
+
+    /**
+     * @return Version number of module, used to see if configurations need to be updated
+     */
+    double version() default 1.0;
 }

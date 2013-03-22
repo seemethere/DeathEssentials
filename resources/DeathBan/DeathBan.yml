@@ -1,0 +1,43 @@
+#===============================================================
+# Time the player is to be banned for
+# d = days
+# h = hours
+# m = minutes
+# s = seconds
+BanTime: 1d 1h 1m 1s
+#===============================================================
+
+#===============================================================
+# Tells the plugin whether or not to invoke itself
+# whenever a player's death not caused through pvp
+ExcludedNonPVP: false
+#===============================================================
+
+#===============================================================
+# Broadcast message to send out to players when a
+# a player dies.
+# Supports standard Minecraft color codes
+# {PLAYER} = Player's name
+# {TIME} = Time player will be banned
+# {KILLER} = Killer of the player
+BroadcastMessage: "&b{PLAYER} &ehas been killed by &b{KILLER} &eand banned for &b{TIME}"
+
+# Option to not have a message broadcast at all when
+# a player dies.
+# true = Broadcast
+# false = No Broadcast
+BroadcastDeath: false
+#================================================================
+
+#================================================================
+# Informs players of the amount of time remaining on
+# their ban in the format of: 'days hours minutes seconds'
+# Supports standard Minecraft color codes
+# {TIME} = Time remaining on ban
+KickMessage: "Your ban expires in &b{TIME}"
+
+# Unban message ot let a player know that their ban time
+# is up and they can log onto the server again
+# Supports standard Minecraft color codes
+UnbanMessage: "&eYou have been unbanned! Relog to get on the server!"
+#=================================================================

@@ -1,8 +1,8 @@
 package com.github.seemethere.DeathEssentials;
 
-import com.github.seemethere.DeathEssentials.utils.module.ModuleDE;
+import com.github.seemethere.DeathEssentials.utils.ModuleManager;
+import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
-import com.github.seemethere.DeathEssentials.utils.module.ModuleManager;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -64,7 +64,7 @@ public class DeathEssentialsPlugin extends JavaPlugin {
     /**
      * @return List of modules with classes
      */
-    public Map<String, ModuleDE> getModuleList() {
+    public Map<String, ModuleBase> getModuleList() {
         return moduleManager.getModuleList();
     }
 

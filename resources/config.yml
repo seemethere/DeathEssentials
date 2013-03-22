@@ -7,8 +7,11 @@
 # false = Disabled from start
 modules:
     TestModule: true
+    DeathCharge: true
+#======================================================
 
 
+#======================================================
 #Do not touch this variable it is used to check if your
 #config needs updating by the plugin
 version: 1.0

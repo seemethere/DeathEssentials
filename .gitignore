@@ -8,5 +8,5 @@
 *.ipr
 *.iws
 .idea/
-
+bin/
 target/

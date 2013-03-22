@@ -1,19 +1,16 @@
 package com.github.seemethere.DeathEssentials.modules;
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
-import com.github.seemethere.DeathEssentials.utils.ConfigAccessor;
+import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
-import com.github.seemethere.DeathEssentials.utils.module.ModuleDE;
+import com.github.seemethere.DeathEssentials.utils.commonutils.RegionUtil;
+import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
+import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,23 +26,24 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @ModuleInfo(name = "DeathCharge",
+        version = 0.5,
         description = "Charge people money on death",
         WorldGuard = true,
         Economy = true)
-public class DeathCharge implements ModuleDE, Listener {
+public class DeathCharge implements ModuleBase, Listener {
     private static boolean status = false;
     private Logger logger;
     private String MODULE_NAME;
     private File exclusions_file;
     private YamlConfiguration exclusions;
-    private ConfigAccessor configAcc;
-    private FileConfiguration config;
+    private YamlConfiguration config;
     private Economy economy;
-    private WorldGuardPlugin wg;
     private Map<String, String> excludedRegions;
     private List<String> excludedWorlds;
 
-    public boolean isEnabled() { return status; }
+    public boolean isEnabled() {
+        return status;
+    }
 
     public void enableModule(DeathEssentialsPlugin plugin, String name) {
         MODULE_NAME = "[" + name + "] ";
@@ -53,17 +51,18 @@ public class DeathCharge implements ModuleDE, Listener {
         excludedRegions = new HashMap<String, String>();
         excludedWorlds = new ArrayList<String>();
         logger = plugin.getLogger();
-        economy = plugin.getDependencies().getEconomy();
-        wg = plugin.getDependencies().getWorldGuard();
+        economy = ModuleDependencies.getEconomy();
         // Initiate main config
-        configAcc = new ConfigAccessor(plugin, "DeathCharge.yml", "/DeathCharge", name);
-        config = configAcc.getConfig();
+        CustomConfig customConfig = new CustomConfig(plugin, "DeathCharge.yml", "/DeathCharge", name);
+        config = customConfig.getConfig();
+
         // Get all things associated with extra config
-        exclusions_file = new File(configAcc.moduleFolder, "ExcludedRegions.yml");
+        exclusions_file = new File(customConfig.getModuleFolder(), "Exclusions.yml");
         try {
             exclusions = YamlConfiguration.loadConfiguration(exclusions_file);
         } catch (Throwable t) {
             logger.severe(MODULE_NAME + "Unable to load ExcludedRegions.yml! Exiting...");
+            plugin.getModuleManager().unplugModule(name);
             return;
         }
 
@@ -92,16 +91,6 @@ public class DeathCharge implements ModuleDE, Listener {
         }
     }
 
-    private ProtectedRegion findRegion(Location loc) {
-        ProtectedRegion highest = null;
-        for (ProtectedRegion r : wg.getRegionManager(loc.getWorld()).getApplicableRegions(loc))
-            if (highest == null || highest.getPriority() < r.getPriority())
-                highest = r;
-        if (highest == null)
-            return null;
-        return highest;
-    }
-
     @CMD(command = "deathcharge",
             aliases = "dc",
             description = "Simple about message",
@@ -116,8 +105,8 @@ public class DeathCharge implements ModuleDE, Listener {
             permission = "deathcharge.region",
             description = "Toggles Worldguard regions from plugin")
     public void sub_region(CallInfo call) {
-        if (findRegion(call.location()) != null) {
-            String id = findRegion(call.location()).getId().toLowerCase();
+        if (RegionUtil.findRegion(call.location()) != null) {
+            String id = RegionUtil.findRegion(call.location()).getId().toLowerCase();
             for (String s : excludedRegions.keySet()) {
                 if (id.equalsIgnoreCase(s) && excludedRegions.get(s).equalsIgnoreCase(call.world().toString())) {
                     excludedRegions.remove(s);
@@ -130,9 +119,8 @@ public class DeathCharge implements ModuleDE, Listener {
             excludedRegions.put(id.toLowerCase(), call.player.getWorld().toString().toLowerCase());
             call.reply("&e%s&aAdded &e%s&a to excluded regions", MODULE_NAME, id);
             logger.info(MODULE_NAME + "Player '" + call.name() + "' added region '" + id + "' to excluded regions");
-        } else {
+        } else
             call.reply("&cERROR: &eNo region found!");
-        }
     }
 
     @SUB_CMD(name = "world",
@@ -164,8 +152,8 @@ public class DeathCharge implements ModuleDE, Listener {
         if (excludedWorlds.contains(p.getWorld().toString()))
             return;
         //Region support
-        if (findRegion(p.getLocation()) != null) {
-            String r = findRegion(p.getLocation()).getId().toLowerCase();
+        if (RegionUtil.findRegion(p.getLocation()) != null) {
+            String r = RegionUtil.findRegion(p.getLocation()).getId().toLowerCase();
             if (excludedRegions.containsKey(r) && excludedRegions.get(r).equalsIgnoreCase(p.getWorld().toString()))
                 return;
         }

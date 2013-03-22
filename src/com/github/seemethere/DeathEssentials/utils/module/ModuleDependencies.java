@@ -10,11 +10,11 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.logging.Logger;
 
 public final class ModuleDependencies {
-    private DeathEssentialsPlugin plugin;
-    private Logger logger;
-    private RegisteredServiceProvider<Economy> economy = null;
-    private RegisteredServiceProvider<Permission> permission = null;
-    private RegisteredServiceProvider<Chat> chat = null;
+    private static DeathEssentialsPlugin plugin;
+    private static Logger logger;
+    private static RegisteredServiceProvider<Economy> economy = null;
+    private static RegisteredServiceProvider<Permission> permission = null;
+    private static RegisteredServiceProvider<Chat> chat = null;
 
 
     public ModuleDependencies(DeathEssentialsPlugin plugin) {
@@ -31,7 +31,7 @@ public final class ModuleDependencies {
      * @param info ModuleInfo
      * @return Check for Dependencies
      */
-    public boolean dependencyError(ModuleInfo info) {
+    public static boolean dependencyError(ModuleInfo info) {
         String MODULE_NAME = "[" + info.name() + "] " + info.name() + " ";
         if (info.Economy())
             if (getEconomy() == null) {
@@ -61,7 +61,7 @@ public final class ModuleDependencies {
      *
      * @return Economy plugin from Vault
      */
-    public Economy getEconomy() {
+    public static Economy getEconomy() {
         if (economy != null)
             return economy.getProvider();
         return null;
@@ -72,7 +72,7 @@ public final class ModuleDependencies {
      *
      * @return Permission plugin from Vault
      */
-    public Permission getPermission() {
+    public static Permission getPermission() {
         if (permission != null)
             return permission.getProvider();
         return null;
@@ -83,7 +83,7 @@ public final class ModuleDependencies {
      *
      * @return Chat plugin from Vault
      */
-    public Chat getChat() {
+    public static Chat getChat() {
         if (chat != null)
             return chat.getProvider();
         return null;
@@ -94,7 +94,7 @@ public final class ModuleDependencies {
      *
      * @return WorldGuardPlugin
      */
-    public WorldGuardPlugin getWorldGuard() {
+    public static WorldGuardPlugin getWorldGuard() {
         //Set up WorldGuard
         if (plugin.getServer().getPluginManager().getPlugin("WorldGuard") instanceof WorldGuardPlugin) {
             return (WorldGuardPlugin) plugin.getServer().getPluginManager().getPlugin("WorldGuard");

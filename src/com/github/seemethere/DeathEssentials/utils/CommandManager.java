@@ -1,6 +1,10 @@
-package com.github.seemethere.DeathEssentials.utils.commands;
+package com.github.seemethere.DeathEssentials.utils;
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.utils.commands.CMD;
+import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
+import com.github.seemethere.DeathEssentials.utils.commands.InvalidCommandArgumentsException;
+import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,22 +18,22 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class CommandManager {
-    private static DeathEssentialsPlugin plugin;
-    private static Map<Method, Object> instances;
+    private DeathEssentialsPlugin plugin;
+    private Map<Method, Object> instances;
     private Logger logger;
     private Map<String, Method> commands;
+    private Map<String, Method> subcommands;
     private Map<String, CCommand> commandMap;
-    private List<String> subcommands;
-    private Map<String, Method> subMethods;
+    private List<String> subcommandMap;
 
-    public CommandManager(DeathEssentialsPlugin plug) {
-        plugin = plug;
+    public CommandManager(DeathEssentialsPlugin plugin) {
+        this.plugin = plugin;
         commands = new HashMap<String, Method>();
         instances = new HashMap<Method, Object>();
         commandMap = new HashMap<String, CCommand>();
-        subcommands = new ArrayList<String>();
-        subMethods = new HashMap<String, Method>();
-        logger = plug.getLogger();
+        subcommandMap = new ArrayList<String>();
+        subcommands = new HashMap<String, Method>();
+        logger = plugin.getLogger();
     }
 
     //=========================================
@@ -97,11 +101,11 @@ public class CommandManager {
     private void registerSub(Method method, Object instance) {
         SUB_CMD c = method.getAnnotation(SUB_CMD.class);
         if (find(c.parent(), commandMap) != null) {
-            subcommands.add(c.parent().toLowerCase() + " " + c.name().toLowerCase());
+            subcommandMap.add(c.parent().toLowerCase() + " " + c.name().toLowerCase());
             Object o = find(c.parent(), commandMap);
             for (String s : ((CCommand) o).getAliases())
-                subcommands.add(s.toLowerCase() + " " + c.name().toLowerCase());
-            subMethods.put(c.name(), method);
+                subcommandMap.add(s.toLowerCase() + " " + c.name().toLowerCase());
+            subcommands.put(c.name(), method);
             try {
                 instances.put(method, instance);
             } catch (Exception e) {
@@ -144,9 +148,9 @@ public class CommandManager {
             if (method.isAnnotationPresent(SUB_CMD.class)) {
                 SUB_CMD c = method.getAnnotation(SUB_CMD.class);
                 Object o = find(c.parent(), commandMap);
-                subcommands.remove(c.parent().toLowerCase() + " " + c.name().toLowerCase());
+                subcommandMap.remove(c.parent().toLowerCase() + " " + c.name().toLowerCase());
                 for (String s : ((CCommand) o).getAliases())
-                    subcommands.remove(s.toLowerCase() + " " + c.name().toLowerCase());
+                    subcommandMap.remove(s.toLowerCase() + " " + c.name().toLowerCase());
             }
         }
     }
@@ -154,7 +158,7 @@ public class CommandManager {
     //=========================================
     //Calling Commands and Subcommands
     //=========================================
-    public void callCommand(String name, CommandSender sender, String[] args) {
+    public void commandHandler(String name, CommandSender sender, String[] args) {
         CallInfo info = new CallInfo(sender, args);
         Method method = commands.get(name.toLowerCase());
         if (method == null)
@@ -178,9 +182,9 @@ public class CommandManager {
 
     private boolean subCommandHandler(String name, CallInfo info) {
         // Return false if it's an invalid command
-        if (!subcommands.contains(name.toLowerCase() + " " + info.args[0].toLowerCase()))
+        if (!subcommandMap.contains(name.toLowerCase() + " " + info.args[0].toLowerCase()))
             return false;
-        Object o = find(info.args[0], subMethods);
+        Object o = find(info.args[0], subcommands);
         Method method = (Method) o;
         if (method == null)
             return false;
@@ -210,6 +214,7 @@ public class CommandManager {
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof InvalidCommandArgumentsException) {
                 e.printStackTrace();
+                throw new RuntimeException("Inavlid arguments on command!");
             } else {
                 e.printStackTrace();
                 throw new RuntimeException("Invalid methods on command!");
@@ -231,7 +236,7 @@ public class CommandManager {
         }
 
         public boolean execute(CommandSender sender, String label, String[] args) {
-            cm.callCommand(label, sender, args);
+            cm.commandHandler(label, sender, args);
             return true;
         }
     }

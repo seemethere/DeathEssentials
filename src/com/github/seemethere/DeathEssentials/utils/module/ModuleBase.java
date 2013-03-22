@@ -2,7 +2,7 @@ package com.github.seemethere.DeathEssentials.utils.module;
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 
-public interface ModuleDE {
+public interface ModuleBase {
     /**
      * Enables module
      */
