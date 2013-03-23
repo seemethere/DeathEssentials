@@ -12,7 +12,7 @@ BanTime: "1d 1h 1m 1s"
 #===============================================================
 # Tells the plugin whether or not to invoke itself
 # whenever a player's death not caused through pvp
-ExcludedNonPVP: false
+ExcludeNonPVP: false
 #===============================================================
 
 #===============================================================
@@ -37,9 +37,4 @@ BroadcastDeath: false
 # Supports standard Minecraft color codes
 # {TIME} = Time remaining on ban
 KickMessage: "Your ban expires in &b{TIME}"
-
-# Unban message to show a player know when their ban time
-# is up and they can log onto the server again
-# Supports standard Minecraft color codes
-UnbanMessage: "Welcome back to the server! Try not to die again soon!"
 #=================================================================

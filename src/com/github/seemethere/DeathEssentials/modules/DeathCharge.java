@@ -3,7 +3,6 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
-import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
 import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commonutils.RegionUtil;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
@@ -97,14 +96,14 @@ public class DeathCharge implements ModuleBase, Listener {
         call.reply("&e%s&aby seemethere!", MODULE_NAME);
     }
 
-    @SUB_CMD(name = "region",
+    @CMD.SUB(name = "region",
             parent = "deathcharge",
             max = 0,
             permission = "deathcharge.region",
             description = "Toggles Worldguard regions from plugin")
     public void sub_region(CallInfo call) {
-        if (RegionUtil.findRegion(call.location()) != null) {
-            String id = RegionUtil.findRegion(call.location()).getId().toLowerCase();
+        if (RegionUtil.getRegionAt(call.location()) != null) {
+            String id = RegionUtil.getRegionAt(call.location()).getId().toLowerCase();
             for (String s : excludedRegions.keySet()) {
                 if (id.equalsIgnoreCase(s) && excludedRegions.get(s).equalsIgnoreCase(call.world().toString())) {
                     excludedRegions.remove(s);
@@ -121,7 +120,7 @@ public class DeathCharge implements ModuleBase, Listener {
             call.reply("&cERROR: &eNo region found!");
     }
 
-    @SUB_CMD(name = "world",
+    @CMD.SUB(name = "world",
             parent = "deathcharge",
             max = 0,
             permission = "deathcharge.world",
@@ -150,8 +149,8 @@ public class DeathCharge implements ModuleBase, Listener {
         if (excludedWorlds.contains(p.getWorld().toString()))
             return;
         //Region support
-        if (RegionUtil.findRegion(p.getLocation()) != null) {
-            String r = RegionUtil.findRegion(p.getLocation()).getId().toLowerCase();
+        if (RegionUtil.getRegionAt(p.getLocation()) != null) {
+            String r = RegionUtil.getRegionAt(p.getLocation()).getId().toLowerCase();
             if (excludedRegions.containsKey(r) && excludedRegions.get(r).equalsIgnoreCase(p.getWorld().toString()))
                 return;
         }

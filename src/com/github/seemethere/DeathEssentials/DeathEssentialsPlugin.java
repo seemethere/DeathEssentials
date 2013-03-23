@@ -41,10 +41,7 @@ public class DeathEssentialsPlugin extends JavaPlugin {
         for (String s : moduleManager.getModuleList().keySet())
             if (moduleManager.getModuleList().get(s).isEnabled())
                 moduleManager.unplugModule(s, true);
-        logger.info("DeathEssentials has been enabled");
-        moduleManager = null;
-        dependencies = null;
-        logger = null;
+        logger.info("DeathEssentials has been disabled");
     }
 
     /**

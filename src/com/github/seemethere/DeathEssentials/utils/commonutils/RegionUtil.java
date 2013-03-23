@@ -6,7 +6,7 @@ import org.bukkit.Location;
 
 
 public class RegionUtil {
-    public static ProtectedRegion findRegion(Location loc) {
+    public static ProtectedRegion getRegionAt(Location loc) {
         ProtectedRegion highest = null;
         for (ProtectedRegion r : ModuleDependencies.getWorldGuard().getRegionManager(loc.getWorld()).getApplicableRegions(loc))
             if (highest == null || highest.getPriority() < r.getPriority())

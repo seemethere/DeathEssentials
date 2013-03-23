@@ -4,7 +4,6 @@ import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commands.InvalidCommandArgumentsException;
-import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -92,14 +91,14 @@ public class CommandManager {
                     e.printStackTrace();
                 }
             } //Register a subcommand
-            else if (method.isAnnotationPresent(SUB_CMD.class)) {
+            else if (method.isAnnotationPresent(CMD.SUB.class)) {
                 registerSub(method, instance);
             }
         }
     }
 
     private void registerSub(Method method, Object instance) {
-        SUB_CMD c = method.getAnnotation(SUB_CMD.class);
+        CMD.SUB c = method.getAnnotation(CMD.SUB.class);
         if (find(c.parent(), commandMap) != null) {
             subcommandMap.add(c.parent().toLowerCase() + " " + c.name().toLowerCase());
             Object o = find(c.parent(), commandMap);
@@ -145,8 +144,8 @@ public class CommandManager {
 
     public void unregisterSubs(Class<?> cls) {
         for (Method method : cls.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(SUB_CMD.class)) {
-                SUB_CMD c = method.getAnnotation(SUB_CMD.class);
+            if (method.isAnnotationPresent(CMD.SUB.class)) {
+                CMD.SUB c = method.getAnnotation(CMD.SUB.class);
                 Object o = find(c.parent(), commandMap);
                 subcommandMap.remove(c.parent().toLowerCase() + " " + c.name().toLowerCase());
                 for (String s : ((CCommand) o).getAliases())
@@ -188,7 +187,7 @@ public class CommandManager {
         Method method = (Method) o;
         if (method == null)
             return false;
-        SUB_CMD c = method.getAnnotation(SUB_CMD.class);
+        CMD.SUB c = method.getAnnotation(CMD.SUB.class);
         if (!info.sender.hasPermission(c.permission())) {
             info.reply(c.permissionsMessage());
             return true;

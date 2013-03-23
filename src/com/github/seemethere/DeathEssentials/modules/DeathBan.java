@@ -1,6 +1,8 @@
 package com.github.seemethere.DeathEssentials.modules;
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.utils.commands.CMD;
+import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commonutils.TimeUtil;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
@@ -20,8 +22,8 @@ import java.util.Map;
 
 @ModuleInfo(name = "DeathBan",
         description = "Bans players on death, with configurable effects.\n" +
-                "Keeps a record of it's own bans and is not affiliated with any\n" +
-                "other banning system",
+                "Keeps a record of its own bans and is not affiliated with any\n" +
+                "other banning system!",
         version = 0.5)
 public class DeathBan implements ModuleBase, Listener {
     private static boolean status = false;
@@ -61,7 +63,6 @@ public class DeathBan implements ModuleBase, Listener {
         kickMessage = config.getString("KickMessage");
         broadcastMessage = config.getString("BroadcastMessage");
         banTime = TimeUtil.ParseTime(config.getString("BanTime"));
-        plugin.getLogger().info("BanTime: " + banTime);
     }
 
     @Override
@@ -80,11 +81,36 @@ public class DeathBan implements ModuleBase, Listener {
         }
     }
 
+    @CMD(command = "deathban",
+            aliases = "db",
+            description = "About command for DeathBan")
+    public void cmd_deathban(CallInfo call) {
+
+    }
+
+    @CMD.SUB(parent = "deathban",
+                name = "unban",
+                description = "Unbans a player that has been banned by DeathBan",
+                permission = "deathban.unban",
+                min = 1,
+                max = 1,
+                AllowConsole = true)
+    public void sub_unban(CallInfo call) {
+        for (String s : bannedPlayers.keySet()) {
+            if (call.args[1].equalsIgnoreCase(s)) {
+                bannedPlayers.remove(s);
+                call.reply("&e%s&b%s&e has been unbanned!", MODULE_NAME, call.args[1]);
+                return;
+            }
+        }
+        call.reply("&e%s&cPlayer not found", MODULE_NAME);
+    }
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player p = event.getEntity();
         // Deaths attributed to non-pvp
-        if (p.getKiller() == null && config.getBoolean("ExcludedNonPVPDeaths"))
+        if (p.getKiller() == null && config.getBoolean("ExcludeNonPVPDeaths"))
             return;
         // Players who can bypass the plugin
         if (p.hasPermission("deathban.bypass"))
@@ -112,7 +138,7 @@ public class DeathBan implements ModuleBase, Listener {
             if (millisElapsed < banTime) {
                 String message = "&4[DeathBan]&e " + kickMessage;
                 message = message.replace("{TIME}", TimeUtil.StringTime(banTime - millisElapsed));
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER,
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
                         ChatColor.translateAlternateColorCodes('&', message));
                 return;
             }

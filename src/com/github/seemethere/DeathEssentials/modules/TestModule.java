@@ -3,7 +3,6 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
-import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
 import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
@@ -57,14 +56,14 @@ public class TestModule implements ModuleBase, Listener {
         call.reply("&e%s&7testing", MODULE_NAME);
     }
 
-    @SUB_CMD(parent = "testing",
+    @CMD.SUB(parent = "testing",
             name = "debug",
             AllowConsole = true)
     public void sub_debug(CallInfo call) {
         call.reply("&e%s&fdebugging", MODULE_NAME);
     }
 
-    @SUB_CMD(parent = "testing",
+    @CMD.SUB(parent = "testing",
             name = "config",
             AllowConsole = true)
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)

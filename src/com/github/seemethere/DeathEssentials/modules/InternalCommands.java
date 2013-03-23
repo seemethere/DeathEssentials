@@ -3,7 +3,6 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
-import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
 import org.bukkit.ChatColor;
@@ -42,7 +41,7 @@ public class InternalCommands implements ModuleBase {
         call.reply("%sv%.1f &7by seemethere", PLUGIN_NAME, plugin.getVersion());
     }
 
-    @SUB_CMD(parent = "deathessentials",
+    @CMD.SUB(parent = "deathessentials",
             name = "enable",
             min = 1,
             max = 1,
@@ -67,7 +66,7 @@ public class InternalCommands implements ModuleBase {
         }
     }
 
-    @SUB_CMD(parent = "deathessentials",
+    @CMD.SUB(parent = "deathessentials",
             name = "disable",
             min = 1,
             max = 1,
@@ -92,7 +91,7 @@ public class InternalCommands implements ModuleBase {
         }
     }
 
-    @SUB_CMD(parent = "deathessentials",
+    @CMD.SUB(parent = "deathessentials",
             name = "reload",
             min = 1,
             max = 1,
@@ -111,7 +110,7 @@ public class InternalCommands implements ModuleBase {
             call.reply("%s%s &4not found!", PLUGIN_NAME, call.args[1]);
     }
 
-    @SUB_CMD(parent = "deathessentials",
+    @CMD.SUB(parent = "deathessentials",
             name = "info",
             min = 1,
             max = 1,
@@ -122,7 +121,7 @@ public class InternalCommands implements ModuleBase {
         if (plugin.getModuleManager().findModule(call.args[1]) != null) {
             ModuleInfo moduleinfo = plugin.getModuleManager().getModuleInfo(call.args[1]);
             boolean enabled = plugin.getModuleManager().findModule(call.args[1]).isEnabled();
-            call.reply("&7-=-=- %s%s&7 -=-=-", enabled ? ChatColor.GREEN : ChatColor.RED, moduleinfo.name());
+            call.reply("    &7-=-=- %s%s&7 -=-=-", enabled ? ChatColor.GREEN : ChatColor.RED, moduleinfo.name());
             if (moduleinfo.NoDisable())
                 call.reply("&4Cannot be disabled");
             call.reply("&3Description: \n&6%s", moduleinfo.description());
@@ -131,19 +130,19 @@ public class InternalCommands implements ModuleBase {
                     + (moduleinfo.Economy() ? "    - Economy \n" : "")
                     + (moduleinfo.Permissions() ? "   - Permissions \n" : "")
                     + (moduleinfo.WorldGuard() ? "    - WorldGuard" : "");
-            call.reply("&3Dependencies: \n&6%s", dependencies.equalsIgnoreCase("") ? "None!" : dependencies);
+            call.reply("&3Dependencies: \n&6%s", dependencies.equalsIgnoreCase("") ? "    -None!" : dependencies);
         } else
             call.reply("%s%s &4not found!", PLUGIN_NAME, call.args[1]);
     }
 
-    @SUB_CMD(parent = "deathessentials",
+    @CMD.SUB(parent = "deathessentials",
             name = "list",
             max = 1,
             description = "Lists all modules",
             permission = ADMIN_PERM,
             AllowConsole = true)
     public void sub_list(CallInfo call) {
-        call.reply("&7-=-=- &6Modules &7-=-=-");
+        call.reply("    &7-=-=- &6Modules &7-=-=-");
         Map<String, ModuleBase> modules = plugin.getModuleList();
         for (String s : modules.keySet()) {
             call.reply("&7%s: %5s", s,
