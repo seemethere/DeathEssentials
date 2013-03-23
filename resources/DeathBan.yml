@@ -4,7 +4,9 @@
 # h = hours
 # m = minutes
 # s = seconds
-BanTime: 1d 1h 1m 1s
+
+# Ex: 5d 4h = 5 days and 4 hours
+BanTime: "1d 1h 1m 1s"
 #===============================================================
 
 #===============================================================
@@ -20,7 +22,7 @@ ExcludedNonPVP: false
 # {PLAYER} = Player's name
 # {TIME} = Time player will be banned
 # {KILLER} = Killer of the player
-BroadcastMessage: "&b{PLAYER} &ehas been killed by &b{KILLER} &eand banned for &b{TIME}"
+BroadcastMessage: "&b{PLAYER} &ehas died and been banned for &b{TIME}"
 
 # Option to not have a message broadcast at all when
 # a player dies.
@@ -36,8 +38,8 @@ BroadcastDeath: false
 # {TIME} = Time remaining on ban
 KickMessage: "Your ban expires in &b{TIME}"
 
-# Unban message ot let a player know that their ban time
+# Unban message to show a player know when their ban time
 # is up and they can log onto the server again
 # Supports standard Minecraft color codes
-UnbanMessage: "&eYou have been unbanned! Relog to get on the server!"
+UnbanMessage: "Welcome back to the server! Try not to die again soon!"
 #=================================================================

@@ -1,10 +1,10 @@
 package com.github.seemethere.DeathEssentials.modules;
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
-import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commands.SUB_CMD;
+import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commonutils.RegionUtil;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
@@ -27,7 +27,8 @@ import java.util.logging.Logger;
 
 @ModuleInfo(name = "DeathCharge",
         version = 0.5,
-        description = "Charge people money on death",
+        description = "Charge a player a configurable amount on death\n" +
+                "",
         WorldGuard = true,
         Economy = true)
 public class DeathCharge implements ModuleBase, Listener {
@@ -41,9 +42,7 @@ public class DeathCharge implements ModuleBase, Listener {
     private Map<String, String> excludedRegions;
     private List<String> excludedWorlds;
 
-    public boolean isEnabled() {
-        return status;
-    }
+    public boolean isEnabled() { return status; }
 
     public void enableModule(DeathEssentialsPlugin plugin, String name) {
         MODULE_NAME = "[" + name + "] ";
@@ -61,8 +60,7 @@ public class DeathCharge implements ModuleBase, Listener {
         try {
             exclusions = YamlConfiguration.loadConfiguration(exclusions_file);
         } catch (Throwable t) {
-            logger.severe(MODULE_NAME + "Unable to load ExcludedRegions.yml! Exiting...");
-            plugin.getModuleManager().unplugModule(name);
+            logger.severe(MODULE_NAME + "Unable to load Exclusions.yml! Exiting...");
             return;
         }
 

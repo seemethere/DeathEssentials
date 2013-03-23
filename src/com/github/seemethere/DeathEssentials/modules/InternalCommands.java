@@ -93,6 +93,25 @@ public class InternalCommands implements ModuleBase {
     }
 
     @SUB_CMD(parent = "deathessentials",
+            name = "reload",
+            min = 1,
+            max = 1,
+            description = "Reloads a module",
+            permission = ADMIN_PERM,
+            AllowConsole = true)
+    public void sub_reload(CallInfo call) {
+        if (plugin.getModuleManager().findModule(call.args[1]) != null) {
+            if (plugin.getModuleManager().findModule(call.args[1]).isEnabled()) {
+                plugin.getModuleManager().unplugModule(call.args[1]);
+                plugin.getModuleManager().plugModule(call.args[1]);
+                call.reply("%s%s &ahas been reloaded!", PLUGIN_NAME, call.args[1]);
+            } else
+                call.reply("%s%s was not enabled and could not be reloaded!", PLUGIN_NAME, call.args[1]);
+        } else
+            call.reply("%s%s &4not found!", PLUGIN_NAME, call.args[1]);
+    }
+
+    @SUB_CMD(parent = "deathessentials",
             name = "info",
             min = 1,
             max = 1,

@@ -51,7 +51,6 @@ public class DeathBan implements ModuleBase, Listener {
             banned_config = YamlConfiguration.loadConfiguration(banned_file);
         } catch (Throwable t) {
             plugin.getLogger().info(MODULE_NAME + "Unable to load BannedPlayers.yml! Unplugging!");
-            plugin.getModuleManager().unplugModule(name);
             return;
         }
         if (banned_config.getConfigurationSection("bannedPlayers") != null) {
@@ -62,6 +61,7 @@ public class DeathBan implements ModuleBase, Listener {
         kickMessage = config.getString("KickMessage");
         broadcastMessage = config.getString("BroadcastMessage");
         banTime = TimeUtil.ParseTime(config.getString("BanTime"));
+        plugin.getLogger().info("BanTime: " + banTime);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class DeathBan implements ModuleBase, Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player p = event.getEntity();
         // Deaths attributed to non-pvp
@@ -94,29 +94,30 @@ public class DeathBan implements ModuleBase, Listener {
         if (config.getBoolean("BroadcastDeath")) {
             String broadcastmsg = ChatColor.translateAlternateColorCodes('&', "&4[DeathBan]&e" + broadcastMessage.
                     replace("{PLAYER}", p.getName()).
-                    replace("{KILLER}", p.getKiller().getName()).
                     replace("{TIME}", TimeUtil.StringTime(banTime)));
             plugin.getServer().broadcastMessage(broadcastmsg);
         }
         plugin.getLogger().info(MODULE_NAME + "Player '" + p.getName() + "' has been banned for "
                 + TimeUtil.StringTime(banTime) + "!");
-        String kickmsg = "&4[DeathBan]&e" + config.getString("KickMessage");
+        String kickmsg = "&4[DeathBan]&e " + config.getString("KickMessage");
         kickmsg = kickmsg.replace("{TIME}", TimeUtil.StringTime(banTime));
         p.kickPlayer(ChatColor.translateAlternateColorCodes('&', kickmsg));
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player p = event.getPlayer();
         if (bannedPlayers.containsKey(p.getName())) {
-            Long millisLeft = System.currentTimeMillis() - bannedPlayers.get(p.getName());
-            if (millisLeft < banTime) {
-                String message = "&4[DeathBan]&e" + config.getString("KickMessage");
-                message = message.replace("{TIME}", TimeUtil.StringTime(millisLeft));
-                p.kickPlayer(ChatColor.translateAlternateColorCodes('&', message));
-            } else {
-                bannedPlayers.remove(p.getName());
+            Long millisElapsed = System.currentTimeMillis() - bannedPlayers.get(p.getName());
+            if (millisElapsed < banTime) {
+                String message = "&4[DeathBan]&e " + kickMessage;
+                message = message.replace("{TIME}", TimeUtil.StringTime(banTime - millisElapsed));
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER,
+                        ChatColor.translateAlternateColorCodes('&', message));
+                return;
             }
+            plugin.getLogger().info(MODULE_NAME + "Player '" + p.getName() + "' has been unbanned");
+            bannedPlayers.remove(p.getName());
         }
     }
 }

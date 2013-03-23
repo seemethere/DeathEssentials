@@ -12,7 +12,6 @@
         </javac>
         <copy todir="build">
             <fileset dir="resources">
-                <include name="*.yml"/>
                 <include name="**/*.yml"/>
             </fileset>
         </copy>

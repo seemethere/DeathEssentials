@@ -11,7 +11,7 @@ public class CallInfo {
     public CommandSender sender;
     public String[] args;
 
-    protected CallInfo(CommandSender sender, String[] args) {
+    public CallInfo(CommandSender sender, String[] args) {
         this.sender = sender;
         this.args = args;
         if (sender instanceof Player)

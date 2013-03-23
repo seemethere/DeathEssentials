@@ -2,6 +2,7 @@ package com.github.seemethere.DeathEssentials.utils;
 
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.modules.DeathBan;
 import com.github.seemethere.DeathEssentials.modules.DeathCharge;
 import com.github.seemethere.DeathEssentials.modules.InternalCommands;
 import com.github.seemethere.DeathEssentials.modules.TestModule;
@@ -17,7 +18,6 @@ import java.util.logging.Logger;
 public class ModuleManager {
     private DeathEssentialsPlugin plugin;
     private CommandManager commandManager;
-    private ModuleDependencies dependencies;
     private Map<String, ModuleBase> moduleList;
     private Map<String, Boolean> InitialStatuses;
     private Logger logger;
@@ -26,7 +26,6 @@ public class ModuleManager {
         this.plugin = plugin;
         logger = plugin.getLogger();
         commandManager = new CommandManager(plugin);
-        dependencies = plugin.getDependencies();
         moduleList = new HashMap<String, ModuleBase>();
         InitialStatuses = new HashMap<String, Boolean>();
         setModuleList();
@@ -38,7 +37,7 @@ public class ModuleManager {
         addModule(new InternalCommands());
         addModule(new TestModule());
         addModule(new DeathCharge());
-        //addModule(new DeathBan());
+        addModule(new DeathBan());
     }
 
     private void addModule(ModuleBase module) {
@@ -115,7 +114,7 @@ public class ModuleManager {
                 return 1;
             ModuleInfo info = getModuleInfo(name);
             //Check if any dependencies are bad
-            if (dependencies.dependencyError(info))
+            if (ModuleDependencies.dependencyError(info))
                 return 3;
             //Register any events
             if (module instanceof Listener)

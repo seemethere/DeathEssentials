@@ -1,7 +1,5 @@
 package com.github.seemethere.DeathEssentials.utils.commonutils;
 
-import org.bukkit.entity.Player;
-
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,10 +35,12 @@ public class TimeUtil {
                 Pattern.CASE_INSENSITIVE);
         Matcher m = timePattern.matcher(time);
         Long millis = (long) 0;
-        millis += toTimeUnit(TimeUnit.DAYS, m, 1);
-        millis += toTimeUnit(TimeUnit.HOURS, m, 2);
-        millis += toTimeUnit(TimeUnit.MINUTES, m, 3);
-        millis += toTimeUnit(TimeUnit.SECONDS, m, 4);
+        if (m.find()) {
+            millis += toTimeUnit(TimeUnit.DAYS, m, 1);
+            millis += toTimeUnit(TimeUnit.HOURS, m, 2);
+            millis += toTimeUnit(TimeUnit.MINUTES, m, 3);
+            millis += toTimeUnit(TimeUnit.SECONDS, m, 4);
+        }
         return millis;
     }
 
