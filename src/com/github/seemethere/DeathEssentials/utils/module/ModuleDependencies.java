@@ -31,25 +31,25 @@ public final class ModuleDependencies {
      * @param info ModuleInfo
      * @return Check for Dependencies
      */
-    public static boolean dependencyError(ModuleInfo info) {
+    public static boolean Error(ModuleInfo info) {
         String MODULE_NAME = "[" + info.name() + "] " + info.name() + " ";
         if (info.Economy())
-            if (getEconomy() == null) {
+            if (Economy() == null) {
                 logger.severe(MODULE_NAME + "could not find an Economy interface. Unplugging module!");
                 return true;
             }
         if (info.Chat())
-            if (getChat() == null) {
+            if (Chat() == null) {
                 logger.severe(MODULE_NAME + "could not find a Chat interface. Unplugging module!");
                 return true;
             }
         if (info.Permissions())
-            if (getPermission() == null) {
+            if (Permission() == null) {
                 logger.severe(MODULE_NAME + "could not find a Permissions interface. Unplugging module!");
                 return true;
             }
         if (info.WorldGuard())
-            if (getWorldGuard() == null) {
+            if (WorldGuard() == null) {
                 logger.severe(MODULE_NAME + "could not find WorldGuard interface. Unplugging module!");
                 return true;
             }
@@ -61,7 +61,7 @@ public final class ModuleDependencies {
      *
      * @return Economy plugin from Vault
      */
-    public static Economy getEconomy() {
+    public static Economy Economy() {
         if (economy != null)
             return economy.getProvider();
         return null;
@@ -72,7 +72,7 @@ public final class ModuleDependencies {
      *
      * @return Permission plugin from Vault
      */
-    public static Permission getPermission() {
+    public static Permission Permission() {
         if (permission != null)
             return permission.getProvider();
         return null;
@@ -83,7 +83,7 @@ public final class ModuleDependencies {
      *
      * @return Chat plugin from Vault
      */
-    public static Chat getChat() {
+    public static Chat Chat() {
         if (chat != null)
             return chat.getProvider();
         return null;
@@ -94,7 +94,7 @@ public final class ModuleDependencies {
      *
      * @return WorldGuardPlugin
      */
-    public static WorldGuardPlugin getWorldGuard() {
+    public static WorldGuardPlugin WorldGuard() {
         //Set up WorldGuard
         if (plugin.getServer().getPluginManager().getPlugin("WorldGuard") instanceof WorldGuardPlugin) {
             return (WorldGuardPlugin) plugin.getServer().getPluginManager().getPlugin("WorldGuard");

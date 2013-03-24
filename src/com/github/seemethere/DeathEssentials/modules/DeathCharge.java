@@ -27,7 +27,9 @@ import java.util.logging.Logger;
 @ModuleInfo(name = "DeathCharge",
         version = 0.5,
         description = "Charge a player a configurable amount on death\n" +
-                "",
+                "Ability to mark WorldGuard regions / Minecraft worlds\n" +
+                "as excluded from the module.\n" +
+                "Also comes with a permissions based bypass",
         WorldGuard = true,
         Economy = true)
 public class DeathCharge implements ModuleBase, Listener {
@@ -41,7 +43,9 @@ public class DeathCharge implements ModuleBase, Listener {
     private Map<String, String> excludedRegions;
     private List<String> excludedWorlds;
 
-    public boolean isEnabled() { return status; }
+    public boolean isEnabled() {
+        return status;
+    }
 
     public void enableModule(DeathEssentialsPlugin plugin, String name) {
         MODULE_NAME = "[" + name + "] ";
@@ -49,7 +53,7 @@ public class DeathCharge implements ModuleBase, Listener {
         excludedRegions = new HashMap<String, String>();
         excludedWorlds = new ArrayList<String>();
         logger = plugin.getLogger();
-        economy = ModuleDependencies.getEconomy();
+        economy = ModuleDependencies.Economy();
         // Initiate main config
         CustomConfig customConfig = new CustomConfig(plugin, "DeathCharge.yml", "/DeathCharge", name);
         config = customConfig.getConfig();
@@ -141,6 +145,9 @@ public class DeathCharge implements ModuleBase, Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player p = event.getEntity();
+        // Permissions bypass
+        if (p.hasPermission("deathcharge.bypass"))
+            return;
         //PVP disable
         if (p.getKiller() != null)
             if (!config.getBoolean("pvp"))

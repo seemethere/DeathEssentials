@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TimeUtil {
-    public static String StringTime(Long millis) {
+    public static String timeToString(Long millis) {
         int second = 1000;
         int minute = second * 60;
         int hour = minute * 60;
@@ -26,7 +26,7 @@ public class TimeUtil {
         return millis;
     }
 
-    public static long ParseTime(String time) {
+    public static long parseTime(String time) {
         Pattern timePattern = Pattern.compile(
                 "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" +
                         "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" +

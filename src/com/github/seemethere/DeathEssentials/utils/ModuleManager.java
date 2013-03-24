@@ -114,7 +114,7 @@ public class ModuleManager {
                 return 1;
             ModuleInfo info = getModuleInfo(name);
             //Check if any dependencies are bad
-            if (ModuleDependencies.dependencyError(info))
+            if (ModuleDependencies.Error(info))
                 return 3;
             //Register any events
             if (module instanceof Listener)

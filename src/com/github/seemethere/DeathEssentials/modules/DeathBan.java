@@ -23,12 +23,13 @@ import java.util.Map;
 @ModuleInfo(name = "DeathBan",
         description = "Bans players on death, with configurable effects.\n" +
                 "Keeps a record of its own bans and is not affiliated with any\n" +
-                "other banning system!",
+                "other banning system!\n" +
+                "Comes with a permissions based bypass",
         version = 0.5)
 public class DeathBan implements ModuleBase, Listener {
     private static boolean status = false;
     private DeathEssentialsPlugin plugin;
-    private YamlConfiguration config;
+    private YamlConfiguration config = null;
     private File banned_file;
     private YamlConfiguration banned_config;
     private String MODULE_NAME;
@@ -53,6 +54,7 @@ public class DeathBan implements ModuleBase, Listener {
             banned_config = YamlConfiguration.loadConfiguration(banned_file);
         } catch (Throwable t) {
             plugin.getLogger().info(MODULE_NAME + "Unable to load BannedPlayers.yml! Unplugging!");
+            plugin.getModuleManager().unplugModule(name);
             return;
         }
         if (banned_config.getConfigurationSection("bannedPlayers") != null) {
@@ -62,12 +64,13 @@ public class DeathBan implements ModuleBase, Listener {
         }
         kickMessage = config.getString("KickMessage");
         broadcastMessage = config.getString("BroadcastMessage");
-        banTime = TimeUtil.ParseTime(config.getString("BanTime"));
+        banTime = TimeUtil.parseTime(config.getString("BanTime"));
     }
 
     @Override
     public void disableModule() {
-        save();
+        if (banned_config != null)
+            save();
         status = false;
     }
 
@@ -85,16 +88,16 @@ public class DeathBan implements ModuleBase, Listener {
             aliases = "db",
             description = "About command for DeathBan")
     public void cmd_deathban(CallInfo call) {
-
+        call.reply("&e%s&b by seemethere", MODULE_NAME);
     }
 
     @CMD.SUB(parent = "deathban",
-                name = "unban",
-                description = "Unbans a player that has been banned by DeathBan",
-                permission = "deathban.unban",
-                min = 1,
-                max = 1,
-                AllowConsole = true)
+            name = "unban",
+            description = "Unbans a player that has been banned by DeathBan",
+            permission = "deathban.unban",
+            min = 1,
+            max = 1,
+            AllowConsole = true)
     public void sub_unban(CallInfo call) {
         for (String s : bannedPlayers.keySet()) {
             if (call.args[1].equalsIgnoreCase(s)) {
@@ -120,13 +123,13 @@ public class DeathBan implements ModuleBase, Listener {
         if (config.getBoolean("BroadcastDeath")) {
             String broadcastmsg = ChatColor.translateAlternateColorCodes('&', "&4[DeathBan]&e" + broadcastMessage.
                     replace("{PLAYER}", p.getName()).
-                    replace("{TIME}", TimeUtil.StringTime(banTime)));
+                    replace("{TIME}", TimeUtil.timeToString(banTime)));
             plugin.getServer().broadcastMessage(broadcastmsg);
         }
         plugin.getLogger().info(MODULE_NAME + "Player '" + p.getName() + "' has been banned for "
-                + TimeUtil.StringTime(banTime) + "!");
+                + TimeUtil.timeToString(banTime) + "!");
         String kickmsg = "&4[DeathBan]&e " + config.getString("KickMessage");
-        kickmsg = kickmsg.replace("{TIME}", TimeUtil.StringTime(banTime));
+        kickmsg = kickmsg.replace("{TIME}", TimeUtil.timeToString(banTime));
         p.kickPlayer(ChatColor.translateAlternateColorCodes('&', kickmsg));
     }
 
@@ -136,14 +139,17 @@ public class DeathBan implements ModuleBase, Listener {
         if (bannedPlayers.containsKey(p.getName())) {
             Long millisElapsed = System.currentTimeMillis() - bannedPlayers.get(p.getName());
             if (millisElapsed < banTime) {
+                // Display amount of time left on ban
                 String message = "&4[DeathBan]&e " + kickMessage;
-                message = message.replace("{TIME}", TimeUtil.StringTime(banTime - millisElapsed));
+                message = message.replace("{TIME}", TimeUtil.timeToString(banTime - millisElapsed));
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
                         ChatColor.translateAlternateColorCodes('&', message));
                 return;
+            } else {
+                // Unban player from module
+                plugin.getLogger().info(MODULE_NAME + "Player '" + p.getName() + "' has been unbanned");
+                bannedPlayers.remove(p.getName());
             }
-            plugin.getLogger().info(MODULE_NAME + "Player '" + p.getName() + "' has been unbanned");
-            bannedPlayers.remove(p.getName());
         }
     }
 }
