@@ -1,4 +1,4 @@
-package com.github.seemethere.DeathEssentials.utils.commonutils;
+package com.github.seemethere.DeathEssentials.utils.configuration;
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import org.bukkit.configuration.file.YamlConfiguration;

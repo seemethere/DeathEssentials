@@ -3,7 +3,7 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
-import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
+import com.github.seemethere.DeathEssentials.utils.configuration.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commonutils.TimeUtil;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
@@ -140,7 +140,7 @@ public class DeathBan implements ModuleBase, Listener {
             Long millisElapsed = System.currentTimeMillis() - bannedPlayers.get(p.getName());
             if (millisElapsed < banTime) {
                 // Display amount of time left on ban
-                String message = "&4[DeathBan]&e " + kickMessage;
+                String message = "&4" + MODULE_NAME + "&e " + kickMessage;
                 message = message.replace("{TIME}", TimeUtil.timeToString(banTime - millisElapsed));
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
                         ChatColor.translateAlternateColorCodes('&', message));

@@ -1,9 +1,9 @@
 #This is the default config for [DeathCharge]
 
 #========================================================
-#Percent determines the amount of
-#percentage lost when a player dies
-#Example:
+# Percent determines the amount of
+# percentage lost when a player dies
+# Example:
 #    percent: 5.00
 #    Player will lose 5 percent of
 #    their money on death
@@ -11,19 +11,28 @@ percent: 5.00
 #========================================================
 
 #========================================================
-#PVP determines if death charge is invoked
-#on deaths caused by pvp
-# false = will lose money on pvp
-# true = will not lose money on pvp
+# PVP determines if death charge is invoked
+# on deaths caused by pvp
+#  false = will lose money on pvp
+#  true = will not lose money on pvp
 pvp: false
+#========================================================
+
+#========================================================
+# Determines message to be sent to players
+# on death.
+# Supports standard Minecraft color codes
+# {AMOUNT} = amount player is charged
+deathMessage: "&cYou have lost &a{AMOUNT} &con death!"
 #========================================================
 
 #*******************************************************
 #****                                               ****
-#****      Regions can only be added in-game        ****
+#****   Regions/Worlds can only be added in-game    ****
 #****              with the command                 ****
 #****            /deathcharge region                ****
+#****            /deathcahrge world                 ****
 #****                                               ****
-#****   Regions are stored in ExcludedRegions.yml   ****
+#****   Regions are stored in Exclusions.yml        ****
 #****                                               ****
 #*******************************************************

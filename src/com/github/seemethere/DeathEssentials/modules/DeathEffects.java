@@ -9,8 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 @ModuleInfo(name = "DeathEffects",
-            description = "Displays effects on player death",
-            version = 0.1)
+        description = "Displays effects on player death",
+        version = 0.1)
 public class DeathEffects implements ModuleBase, Listener {
     private static boolean status = false;
 

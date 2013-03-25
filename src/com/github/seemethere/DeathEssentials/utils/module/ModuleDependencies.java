@@ -18,7 +18,7 @@ public final class ModuleDependencies {
 
 
     public ModuleDependencies(DeathEssentialsPlugin plugin) {
-        this.plugin = plugin;
+        ModuleDependencies.plugin = plugin;
         logger = plugin.getLogger();
         economy = plugin.getServer().getServicesManager().getRegistration(Economy.class);
         permission = plugin.getServer().getServicesManager().getRegistration(Permission.class);
@@ -31,7 +31,7 @@ public final class ModuleDependencies {
      * @param info ModuleInfo
      * @return Check for Dependencies
      */
-    public static boolean Error(ModuleInfo info) {
+    public static boolean error(ModuleInfo info) {
         String MODULE_NAME = "[" + info.name() + "] " + info.name() + " ";
         if (info.Economy())
             if (Economy() == null) {

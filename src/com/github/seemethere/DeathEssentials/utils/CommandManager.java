@@ -105,11 +105,7 @@ public class CommandManager {
             for (String s : ((CCommand) o).getAliases())
                 subcommandMap.add(s.toLowerCase() + " " + c.name().toLowerCase());
             subcommands.put(c.name(), method);
-            try {
-                instances.put(method, instance);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            instances.put(method, instance);
         }
     }
 

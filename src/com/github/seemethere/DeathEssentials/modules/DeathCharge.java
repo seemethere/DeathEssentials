@@ -3,7 +3,7 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
-import com.github.seemethere.DeathEssentials.utils.commonutils.CustomConfig;
+import com.github.seemethere.DeathEssentials.utils.configuration.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commonutils.RegionUtil;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
@@ -36,6 +36,7 @@ public class DeathCharge implements ModuleBase, Listener {
     private static boolean status = false;
     private Logger logger;
     private String MODULE_NAME;
+    private String deathMessage;
     private File exclusions_file;
     private YamlConfiguration exclusions;
     private YamlConfiguration config;
@@ -57,6 +58,7 @@ public class DeathCharge implements ModuleBase, Listener {
         // Initiate main config
         CustomConfig customConfig = new CustomConfig(plugin, "DeathCharge.yml", "/DeathCharge", name);
         config = customConfig.getConfig();
+        deathMessage = config.getString("deathMessage");
 
         // Get all things associated with extra config
         exclusions_file = new File(customConfig.getModuleFolder(), "Exclusions.yml");
@@ -162,8 +164,9 @@ public class DeathCharge implements ModuleBase, Listener {
                 return;
         }
         double lost = (config.getDouble("percent") / 100) * economy.getBalance(p.getName());
+        String amount = String.format("%.2f", lost);
+        String message = ChatColor.YELLOW + MODULE_NAME + deathMessage.replace("{AMOUNT}", amount);
         economy.withdrawPlayer(p.getName(), lost);
-        p.sendMessage(String.format("%sYou have lost %s$%.2f%s on death!",
-                ChatColor.YELLOW, ChatColor.RED, lost, ChatColor.YELLOW));
+        p.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
 }
