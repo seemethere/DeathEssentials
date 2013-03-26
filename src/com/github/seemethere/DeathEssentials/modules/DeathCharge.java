@@ -3,8 +3,8 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
-import com.github.seemethere.DeathEssentials.utils.configuration.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commonutils.RegionUtil;
+import com.github.seemethere.DeathEssentials.utils.configuration.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
@@ -42,6 +42,8 @@ public class DeathCharge implements ModuleBase, Listener {
     private YamlConfiguration config;
     private Economy economy;
     private Map<String, String> excludedRegions;
+    private boolean isPercent = false;
+    private double charge;
     private List<String> excludedWorlds;
 
     public boolean isEnabled() {
@@ -59,7 +61,19 @@ public class DeathCharge implements ModuleBase, Listener {
         CustomConfig customConfig = new CustomConfig(plugin, "DeathCharge.yml", "/DeathCharge", name);
         config = customConfig.getConfig();
         deathMessage = config.getString("deathMessage");
-
+        // Check if what we're dealing with is a percent or not
+        String configCharge = "5%";
+        if (config.getString("amount") != null) {
+            try {
+            configCharge = config.getString("amount");
+            charge = Double.parseDouble(configCharge.replace("%", ""));
+            } catch (NumberFormatException e) {
+                logger.severe(MODULE_NAME + "DeathCharge.yml contains an invalid 'amount' value!");
+                logger.severe(MODULE_NAME + "Reverting to the default charge of 5%");
+            }
+        }
+        if (configCharge.contains("%"))
+            isPercent = true;
         // Get all things associated with extra config
         exclusions_file = new File(customConfig.getModuleFolder(), "Exclusions.yml");
         try {
@@ -163,10 +177,22 @@ public class DeathCharge implements ModuleBase, Listener {
             if (excludedRegions.containsKey(r) && excludedRegions.get(r).equalsIgnoreCase(p.getWorld().toString()))
                 return;
         }
-        double lost = (config.getDouble("percent") / 100) * economy.getBalance(p.getName());
-        String amount = String.format("%.2f", lost);
-        String message = ChatColor.YELLOW + MODULE_NAME + deathMessage.replace("{AMOUNT}", amount);
-        economy.withdrawPlayer(p.getName(), lost);
-        p.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        double lost = -1;
+        // Add support for amounts / percentages
+        if (isPercent)
+            lost = (charge / 100) * economy.getBalance(p.getName());
+        // They have enough money for the charge
+        else if (economy.getBalance(p.getName()) > charge)
+            lost = charge;
+        // Drain all the money they have
+        else if (config.getBoolean("drain"))
+            lost = economy.getBalance(p.getName());
+
+        if (lost != -1) {
+            String message = ChatColor.YELLOW + MODULE_NAME +
+                    deathMessage.replace("{AMOUNT}", String.format("%.2f", lost));
+            economy.withdrawPlayer(p.getName(), lost);
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        }
     }
 }

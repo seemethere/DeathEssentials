@@ -1,13 +1,35 @@
 #This is the default config for [DeathCharge]
 
 #========================================================
-# Percent determines the amount of
-# percentage lost when a player dies
+# Amount determines the amount or
+# percentage lost when a player dies.
+#
+# Use a % sign in the quotations if
+# you would like to charge a percentage.
+#
+# Use no sign if you would like to charge
+# an amount
+#
+# NOTE: Must be in quotation marks
+#
 # Example:
-#    percent: 5.00
+#    amount: "5.00%"
 #    Player will lose 5 percent of
 #    their money on death
-percent: 5.00
+#
+#    amount: "5.00"
+#    Player will lose $5 of their
+#    money on death
+amount: "5.00%"
+
+# Determines if the plugin will drain
+# remaining funds (set balance to 0)
+# if a player does not have enough
+# money to pay the charge
+#
+# NOTE: only applies if the above
+#       variable is not a percentage
+drain: false
 #========================================================
 
 #========================================================
