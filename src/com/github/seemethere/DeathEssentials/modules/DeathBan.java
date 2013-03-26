@@ -3,8 +3,8 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
-import com.github.seemethere.DeathEssentials.utils.configuration.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.commonutils.TimeUtil;
+import com.github.seemethere.DeathEssentials.utils.configuration.CustomConfig;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
 import org.bukkit.ChatColor;
@@ -144,7 +144,6 @@ public class DeathBan implements ModuleBase, Listener {
                 message = message.replace("{TIME}", TimeUtil.timeToString(banTime - millisElapsed));
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
                         ChatColor.translateAlternateColorCodes('&', message));
-                return;
             } else {
                 // Unban player from module
                 plugin.getLogger().info(MODULE_NAME + "Player '" + p.getName() + "' has been unbanned");

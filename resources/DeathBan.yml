@@ -21,7 +21,6 @@ ExcludeNonPVP: false
 # Supports standard Minecraft color codes
 # {PLAYER} = Player's name
 # {TIME} = Time player will be banned
-# {KILLER} = Killer of the player
 BroadcastMessage: "&b{PLAYER} &ehas died and been banned for &b{TIME}"
 
 # Option to not have a message broadcast at all when
