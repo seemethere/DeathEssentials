@@ -36,15 +36,15 @@ public class TimeUtil {
         Matcher m = timePattern.matcher(time);
         Long millis = (long) 0;
         if (m.find()) {
-            millis += toTimeUnit(TimeUnit.DAYS, m, 1);
-            millis += toTimeUnit(TimeUnit.HOURS, m, 2);
-            millis += toTimeUnit(TimeUnit.MINUTES, m, 3);
-            millis += toTimeUnit(TimeUnit.SECONDS, m, 4);
+            millis += toMS(TimeUnit.DAYS, m, 1);
+            millis += toMS(TimeUnit.HOURS, m, 2);
+            millis += toMS(TimeUnit.MINUTES, m, 3);
+            millis += toMS(TimeUnit.SECONDS, m, 4);
         }
         return millis;
     }
 
-    private static long toTimeUnit(TimeUnit timeUnit, Matcher m, int group) {
+    private static long toMS(TimeUnit timeUnit, Matcher m, int group) {
         if (m.group(group) != null && !m.group(group).isEmpty())
             return timeUnit.toMillis(Integer.parseInt(m.group(group)));
         return 0;

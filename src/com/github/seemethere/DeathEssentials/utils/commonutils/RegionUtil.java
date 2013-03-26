@@ -15,4 +15,11 @@ public class RegionUtil {
             return null;
         return highest;
     }
+
+    public static boolean isInRegion(String region, Location l) {
+        for (ProtectedRegion r : ModuleDependencies.WorldGuard().getRegionManager(l.getWorld()).getApplicableRegions(l))
+            if (r.getId().equalsIgnoreCase(region))
+                return true;
+        return false;
+    }
 }
