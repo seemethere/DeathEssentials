@@ -4,6 +4,7 @@ import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,17 +15,18 @@ import java.util.logging.Logger;
  * @author seemethere
  */
 
-public class CustomConfig {
+public class ConfigManager {
 
-    private static File configFile;
-    private static YamlConfiguration fileConfiguration;
     private final File moduleFolder;
     private final String fileName;
     private final DeathEssentialsPlugin plugin;
     private final Logger logger;
     private final String module;
+    private File configFile;
+    private Map<String, File> customFiles;
+    private YamlConfiguration fileConfiguration;
 
-    public CustomConfig(DeathEssentialsPlugin plugin, String fileName, String dir, String module) {
+    public ConfigManager(DeathEssentialsPlugin plugin, String fileName, String dir, String module) {
         if (plugin == null)
             throw new IllegalArgumentException("plugin cannot be null");
         if (!plugin.isInitialized())
@@ -76,8 +78,55 @@ public class CustomConfig {
 
     public void saveDefaultConfig() {
         if (!configFile.exists()) {
-            copyResource(configFile, fileName);
+            try {
+                copyResource(configFile, fileName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    public YamlConfiguration getCustomConfig(String name) {
+        return YamlConfiguration.loadConfiguration(createCustomFile(name));
+    }
+
+    public void saveCustomConfig(String name, YamlConfiguration inConfig) {
+        createCustomFile(name);
+        try {
+            inConfig.save(customFiles.get(name));
+        } catch (IOException e) {
+            e.printStackTrace();
+            plugin.getLogger().log(Level.SEVERE, "Could not save custom config '" + name + "'");
+        }
+    }
+
+    private File createCustomFile(String name) {
+        if (!customFiles.containsKey(name))
+            customFiles.put(name, new File(this.getModuleFolder(), name));
+        return customFiles.get(name);
+    }
+
+    //TODO: Write private void updateConfig() method
+    private boolean needsUpdate() {
+        return (fileConfiguration.getDouble("version") < plugin.getModuleManager().getModuleInfo(module).version());
+    }
+
+    private void versionConfig(BufferedWriter out) throws IOException {
+        out.newLine();
+        out.write("#========================================================");
+        out.newLine();
+        out.write("#=IMPORTANT: Do not touch this variable!!! The plugin   =");
+        out.newLine();
+        out.write("#=           uses this variable to see if your config   =");
+        out.newLine();
+        out.write("#=           needs to be updated                        =");
+        out.newLine();
+        out.write("version: " + plugin.getModuleManager().getModuleInfo(module).version());
+        out.newLine();
+        out.write("#=========================================================");
+        out.newLine();
+        out.flush();
+        out.close();
     }
 
     private boolean copyResource(File file, String resource) {
@@ -93,6 +142,7 @@ public class CustomConfig {
             file.createNewFile();
             OutputStream output = new FileOutputStream(file);
             copy(input, output);
+            versionConfig(new BufferedWriter(new FileWriter(file, true)));
         } catch (IOException e) {
             logger.severe("[" + module + "] Error creating config file '" + fileName + "' ! Unplugging module!");
             plugin.getModuleManager().unplugModule(module);
