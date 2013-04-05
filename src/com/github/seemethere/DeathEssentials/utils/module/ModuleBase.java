@@ -4,6 +4,14 @@ import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 
 public interface ModuleBase {
     /**
+     * True = Plugged
+     * False = Unplugged
+     *
+     * @return Status of module.
+     */
+    boolean isEnabled();
+
+    /**
      * Enables module
      */
     abstract void enableModule(DeathEssentialsPlugin plugin, String name);
@@ -12,12 +20,4 @@ public interface ModuleBase {
      * Disables module
      */
     abstract void disableModule();
-
-    /**
-     * True = Plugged
-     * False = Unplugged
-     *
-     * @return Status of module.
-     */
-    boolean isEnabled();
 }

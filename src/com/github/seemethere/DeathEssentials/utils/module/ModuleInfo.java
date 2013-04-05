@@ -44,6 +44,11 @@ public @interface ModuleInfo {
     boolean NoDisable() default false;
 
     /**
+     * @return True/False if this module has a config
+     */
+    boolean HasConfig() default false;
+
+    /**
      * @return Version number of module, used to see if configurations need to be updated
      */
     double version() default 1.0;

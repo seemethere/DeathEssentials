@@ -3,7 +3,7 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
-import com.github.seemethere.DeathEssentials.utils.configuration.CustomConfig;
+import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,10 +20,12 @@ import java.util.logging.Logger;
 @ModuleInfo(name = "TestModule",
         description = "Module used to test everything",
         WorldGuard = true,
-        Economy = true)
+        Economy = true,
+        HasConfig = true,
+        version = 2.0)
 public class TestModule implements ModuleBase, Listener {
     private static boolean status = false;
-    private static CustomConfig configAcc;
+    private static ConfigManager configAcc;
     private static FileConfiguration config;
     private static String MODULE_NAME;
     private static Logger logger;
@@ -35,7 +37,7 @@ public class TestModule implements ModuleBase, Listener {
     public void enableModule(DeathEssentialsPlugin plugin, String name) {
         status = true;
         logger = plugin.getLogger();
-        configAcc = new CustomConfig(plugin, "TestModule.yml", "/TestModule", name);
+        configAcc = plugin.getModuleConfigManager(this);
         config = configAcc.getConfig();
         MODULE_NAME = "[" + name + "] ";
     }

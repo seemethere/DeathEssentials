@@ -6,6 +6,7 @@ import com.github.seemethere.DeathEssentials.modules.DeathBan;
 import com.github.seemethere.DeathEssentials.modules.DeathCharge;
 import com.github.seemethere.DeathEssentials.modules.InternalCommands;
 import com.github.seemethere.DeathEssentials.modules.TestModule;
+import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
@@ -19,6 +20,7 @@ public class ModuleManager {
     private DeathEssentialsPlugin plugin;
     private CommandManager commandManager;
     private Map<String, ModuleBase> moduleList;
+    private Map<ModuleBase, ConfigManager> moduleConfigs;
     private Map<String, Boolean> InitialStatuses;
     private Logger logger;
 
@@ -28,6 +30,7 @@ public class ModuleManager {
         commandManager = new CommandManager(plugin);
         moduleList = new HashMap<String, ModuleBase>();
         InitialStatuses = new HashMap<String, Boolean>();
+        moduleConfigs = new HashMap<ModuleBase, ConfigManager>();
         setModuleList();
         setInitialStatus();
     }
@@ -119,6 +122,8 @@ public class ModuleManager {
             //Register any events
             if (module instanceof Listener)
                 plugin.getServer().getPluginManager().registerEvents((Listener) module, plugin);
+            if (info.HasConfig())
+                moduleConfigs.put(module,  new ConfigManager(plugin, "/" + info.name(), info.name()));
             // Register commands
             try {
                 commandManager.register(module.getClass(), module);
@@ -135,10 +140,10 @@ public class ModuleManager {
     /**
      * Unplugs a module from the plugin. Different numbers indicate different things
      * <p>
-     * 3 = Module cannot be disabled
-     * 2 = Module not found
-     * 1 = Already disabled
-     * 0 = Success
+     *    3 = Module cannot be disabled
+     *    2 = Module not found
+     *    1 = Already disabled
+     *    0 = Success
      * </p>
      *
      * @param name Module name
@@ -152,12 +157,16 @@ public class ModuleManager {
             ModuleInfo info = getModuleInfo(name);
             if (info.NoDisable() && !last)
                 return 3;
+            // Disable module first as to avoid NPE's
+            module.disableModule();
+            // Unregiser the module config if any
+            if (info.HasConfig())
+                moduleConfigs.remove(module);
             // Unregister events, if any
             if (module instanceof Listener)
                 plugin.unregisterEvents((Listener) module);
             // Unregister commands for class
             commandManager.unregister(module.getClass());
-            module.disableModule();
             logger.info("[" + info.name() + "] " + info.name() + " has been disabled!");
             return 0;
         }
@@ -167,5 +176,30 @@ public class ModuleManager {
     //Wrapper makes sure this isn't the last unplug
     public int unplugModule(String name) {
         return this.unplugModule(name, false);
+    }
+
+    /**
+     * Updates a module's config, different numbers indicate different errors/success
+     * <p>
+     *    2 = Module does not need an update
+     *    1 = Module config was not found
+     *    0 = Success
+     * </p>
+     * @param module Class of module to be updated
+     * @return Error/Success code
+     */
+    public int updateModuleConfig(ModuleBase module) {
+        if (!moduleConfigs.containsKey(module))
+            return 1;
+        if (!moduleConfigs.get(module).needsUpdate())
+            return 2;
+        moduleConfigs.get(module).updateConfig();
+        return 0;
+    }
+
+    public ConfigManager getModuleConfigManager(ModuleBase module) {
+        if (!moduleConfigs.containsKey(module))
+            return null;
+        return moduleConfigs.get(module);
     }
 }

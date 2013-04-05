@@ -6,10 +6,19 @@
 # true = Enabled from start
 # false = Disabled from start
 modules:
-    TestModule: true
-    DeathCharge: true
+    TestModule: false
+    DeathCharge: false
+    DeathBan: false
 #======================================================
 
+#======================================================
+# This section indicates whether or not you would like
+# to keep your old configs when you update a module.
+#
+# true = keep
+# false = do not keep
+KeepOldConfigs: true
+#======================================================
 
 #======================================================
 #Do not touch this variable it is used to check if your

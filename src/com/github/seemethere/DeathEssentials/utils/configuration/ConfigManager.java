@@ -4,6 +4,7 @@ import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,20 +22,22 @@ public class ConfigManager {
     private final String fileName;
     private final DeathEssentialsPlugin plugin;
     private final Logger logger;
-    private final String module;
+    private final String name;
     private File configFile;
     private Map<String, File> customFiles;
+    private Map<YamlConfiguration, File> customConfigs;
     private YamlConfiguration fileConfiguration;
+    private double version;
 
-    public ConfigManager(DeathEssentialsPlugin plugin, String fileName, String dir, String module) {
+    public ConfigManager(DeathEssentialsPlugin plugin, String dir, String name) {
         if (plugin == null)
             throw new IllegalArgumentException("plugin cannot be null");
         if (!plugin.isInitialized())
             throw new IllegalArgumentException("plugin must be initiaized");
         this.plugin = plugin;
         this.logger = plugin.getLogger();
-        this.fileName = fileName;
-        this.module = module;
+        this.fileName = name + ".yml";
+        this.name = name;
         File dataFolder = plugin.getDataFolder();
         if (!dataFolder.exists())
             dataFolder.mkdir();
@@ -44,10 +47,16 @@ public class ConfigManager {
             moduleFolder.mkdirs();
         }
         configFile = new File(moduleFolder, fileName);
-        fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
         saveDefaultConfig();
+        fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
+        version = fileConfiguration.getDouble("version");
+        customFiles = new HashMap<String, File>();
+        customConfigs =  new HashMap<YamlConfiguration, File>();
     }
 
+    //========================================================
+    // Typical methods related to using a Config
+    //========================================================
     public void reloadConfig() {
         // Look for defaults in the jar
         InputStream defConfigStream = plugin.getResource(fileName);
@@ -86,29 +95,55 @@ public class ConfigManager {
         }
     }
 
-    public YamlConfiguration getCustomConfig(String name) {
-        return YamlConfiguration.loadConfiguration(createCustomFile(name));
+    //========================================================
+    // Creating custom files dealing with plugin things
+    //========================================================
+    public YamlConfiguration getModuleConfig(String name) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(createModuleFile(name));
+        customConfigs.put(config, createModuleFile(name));
+        return config;
     }
 
-    public void saveCustomConfig(String name, YamlConfiguration inConfig) {
-        createCustomFile(name);
-        try {
-            inConfig.save(customFiles.get(name));
-        } catch (IOException e) {
-            e.printStackTrace();
-            plugin.getLogger().log(Level.SEVERE, "Could not save custom config '" + name + "'");
+    public void saveModuleConfig(YamlConfiguration inConfig) {
+        if (customConfigs.containsKey(inConfig)) {
+            try {
+                inConfig.save(customConfigs.get(inConfig));
+            } catch (Exception e) {
+                plugin.getLogger().severe("[" + name + "] Could not save custom config '" + inConfig.getName() + "'");
+            }
+            return;
         }
+        plugin.getLogger().severe("[" + name +"] Config '" + inConfig.getName() + "' could not be saved because it " +
+                "was not registered with the config manager");
     }
 
-    private File createCustomFile(String name) {
+    private File createModuleFile(String name) {
         if (!customFiles.containsKey(name))
             customFiles.put(name, new File(this.getModuleFolder(), name));
         return customFiles.get(name);
     }
 
-    //TODO: Write private void updateConfig() method
-    private boolean needsUpdate() {
-        return (fileConfiguration.getDouble("version") < plugin.getModuleManager().getModuleInfo(module).version());
+    //========================================================
+    // All things dealing with updating the config
+    //========================================================
+    public int updateConfig() {
+        if (!needsUpdate())
+            return 1;
+        if (plugin.getConfig().getBoolean("KeepOldConfigs")) {
+            File oldFile = new File(moduleFolder, name + " v" + version + ".yml");
+            if (!configFile.renameTo(oldFile))
+                plugin.getLogger().severe("[" + name + "] Error updating module config!");
+        } else
+            configFile.delete();
+        configFile = new File(moduleFolder, name + ".yml");
+        saveDefaultConfig();
+        fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
+        version = fileConfiguration.getDouble("version");
+        return 0;
+    }
+
+    public boolean needsUpdate() {
+        return (fileConfiguration.getDouble("version") < plugin.getModuleManager().getModuleInfo(name).version());
     }
 
     private void versionConfig(BufferedWriter out) throws IOException {
@@ -121,9 +156,9 @@ public class ConfigManager {
         out.newLine();
         out.write("#=           needs to be updated                        =");
         out.newLine();
-        out.write("version: " + plugin.getModuleManager().getModuleInfo(module).version());
+        out.write("version: " + plugin.getModuleManager().getModuleInfo(name).version());
         out.newLine();
-        out.write("#=========================================================");
+        out.write("#========================================================");
         out.newLine();
         out.flush();
         out.close();
@@ -133,19 +168,19 @@ public class ConfigManager {
         if (!file.exists()) try {
             InputStream input = plugin.getResource(resource);
             if (input == null) {
-                logger.severe("[" + module + "] Resource '" + resource +
+                logger.severe("[" + name + "] Resource '" + resource +
                         "' not found! Contact author for help! Unplugging module!");
-                plugin.getModuleManager().unplugModule(module);
+                plugin.getModuleManager().unplugModule(name);
                 return true;
             }
-            logger.info("[" + module + "] Creating default config file '" + fileName + "'");
+            logger.info("[" + name + "] Creating default config file '" + fileName + "'");
             file.createNewFile();
             OutputStream output = new FileOutputStream(file);
             copy(input, output);
             versionConfig(new BufferedWriter(new FileWriter(file, true)));
         } catch (IOException e) {
-            logger.severe("[" + module + "] Error creating config file '" + fileName + "' ! Unplugging module!");
-            plugin.getModuleManager().unplugModule(module);
+            logger.severe("[" + name + "] Error creating config file '" + fileName + "' ! Unplugging module!");
+            plugin.getModuleManager().unplugModule(name);
         }
         return false;
     }

@@ -1,8 +1,11 @@
 package com.github.seemethere.DeathEssentials;
 
 import com.github.seemethere.DeathEssentials.utils.ModuleManager;
+import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
+import org.bukkit.Server;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,5 +79,13 @@ public class DeathEssentialsPlugin extends JavaPlugin {
      */
     public void unregisterEvents(Listener listener) {
         HandlerList.unregisterAll(listener);
+    }
+
+    public ConfigManager getModuleConfigManager(ModuleBase module) {
+        return this.getModuleManager().getModuleConfigManager(module);
+    }
+
+    public ModuleBase findModule(String name) {
+        return this.getModuleManager().findModule(name);
     }
 }

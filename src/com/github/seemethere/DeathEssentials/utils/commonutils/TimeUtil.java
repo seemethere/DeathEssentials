@@ -33,7 +33,9 @@ public class TimeUtil {
                         "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" +
                         "(?:([0-9]+)\\s*(?:s[a-z]*)?)?",
                 Pattern.CASE_INSENSITIVE);
+        //TODO: Find out why there's an NPE here
         Matcher m = timePattern.matcher(time);
+        //======================================
         Long millis = (long) 0;
         if (m.find()) {
             millis += toMS(TimeUnit.DAYS, m, 1);

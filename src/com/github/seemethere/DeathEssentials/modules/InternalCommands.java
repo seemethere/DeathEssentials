@@ -3,6 +3,7 @@ package com.github.seemethere.DeathEssentials.modules;
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
+import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
 import org.bukkit.ChatColor;
@@ -131,6 +132,9 @@ public class InternalCommands implements ModuleBase {
                     + (moduleinfo.Permissions() ? "   - Permissions \n" : "")
                     + (moduleinfo.WorldGuard() ? "    - WorldGuard" : "");
             call.reply("&3Dependencies: \n&6%s", dependencies.equalsIgnoreCase("") ? "    -None!" : dependencies);
+            if (moduleinfo.HasConfig() && enabled)
+                if (plugin.getModuleConfigManager(plugin.findModule(call.args[1])).needsUpdate())
+                    call.reply("&bConfig update is available\n Use /module update <module> to update your config!");
         } else
             call.reply("%s%s &4not found!", PLUGIN_NAME, call.args[1]);
     }
@@ -145,8 +149,34 @@ public class InternalCommands implements ModuleBase {
         call.reply("    &7-=-=- &6Modules &7-=-=-");
         Map<String, ModuleBase> modules = plugin.getModuleList();
         for (String s : modules.keySet()) {
-            call.reply("&7%s: %5s", s,
-                    modules.get(s).isEnabled() ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled");
+            String isEnabled = modules.get(s).isEnabled() ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled";
+            ConfigManager configManager = plugin.getModuleConfigManager(modules.get(s));
+            boolean hasConfig = configManager != null;
+            String needsUpdate = "";
+            if (modules.get(s).isEnabled())
+                if (hasConfig && configManager.needsUpdate())
+                    needsUpdate = ChatColor.YELLOW + "(" + ChatColor.AQUA + "U" + ChatColor.YELLOW + ")";
+            call.reply("&7%s: %5s %3s", s,isEnabled, needsUpdate);
+        }
+    }
+
+    @CMD.SUB(parent = "deathessentials",
+            name = "update",
+            max = 1,
+            description = "Updates a module's config",
+            permission = ADMIN_PERM,
+            AllowConsole = true)
+    public void sub_update(CallInfo call) {
+        switch (plugin.getModuleManager().updateModuleConfig(plugin.findModule(call.args[1]))) {
+            case 2:
+                call.reply("%s%s &4does not need an update!", PLUGIN_NAME, call.args[1]);
+                break;
+            case 1:
+                call.reply("%s%s's&4 config not found!", PLUGIN_NAME, call.args[1]);
+                break;
+            case 0:
+                call.reply("%s%s's &aconfig has been updated!", PLUGIN_NAME, call.args[1]);
+                break;
         }
     }
 }

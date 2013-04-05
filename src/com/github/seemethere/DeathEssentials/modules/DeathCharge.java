@@ -4,7 +4,7 @@ import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commonutils.RegionUtil;
-import com.github.seemethere.DeathEssentials.utils.configuration.CustomConfig;
+import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
@@ -17,7 +17,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,19 +24,20 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @ModuleInfo(name = "DeathCharge",
-        version = 0.5,
+        version = 0.6,
         description = "Charge a player a configurable amount on death\n" +
                 "Ability to mark WorldGuard regions / Minecraft worlds\n" +
                 "as excluded from the module.\n" +
-                "Also comes with a permissions based bypass",
+                "Also comes with a permissions based bypass: 'deathcharge.bypass'",
         WorldGuard = true,
-        Economy = true)
+        Economy = true,
+        HasConfig = true)
 public class DeathCharge implements ModuleBase, Listener {
     private static boolean status = false;
+    private DeathEssentialsPlugin plugin;
     private Logger logger;
     private String MODULE_NAME;
     private String deathMessage;
-    private File exclusions_file;
     private YamlConfiguration exclusions;
     private YamlConfiguration config;
     private Economy economy;
@@ -52,21 +52,22 @@ public class DeathCharge implements ModuleBase, Listener {
 
     public void enableModule(DeathEssentialsPlugin plugin, String name) {
         MODULE_NAME = "[" + name + "] ";
+        this.plugin = plugin;
         status = true;
         excludedRegions = new HashMap<String, String>();
         excludedWorlds = new ArrayList<String>();
         logger = plugin.getLogger();
         economy = ModuleDependencies.Economy();
         // Initiate main config
-        CustomConfig customConfig = new CustomConfig(plugin, "DeathCharge.yml", "/DeathCharge", name);
-        config = customConfig.getConfig();
+        ConfigManager configManager = plugin.getModuleConfigManager(this);
+        config = configManager.getConfig();
         deathMessage = config.getString("deathMessage");
         // Check if what we're dealing with is a percent or not
         String configCharge = "5%";
         if (config.getString("amount") != null) {
             try {
-            configCharge = config.getString("amount");
-            charge = Double.parseDouble(configCharge.replace("%", ""));
+                configCharge = config.getString("amount");
+                charge = Double.parseDouble(configCharge.replace("%", ""));
             } catch (NumberFormatException e) {
                 logger.severe(MODULE_NAME + "DeathCharge.yml contains an invalid 'amount' value!");
                 logger.severe(MODULE_NAME + "Reverting to the default charge of 5%");
@@ -75,14 +76,7 @@ public class DeathCharge implements ModuleBase, Listener {
         if (configCharge.contains("%"))
             isPercent = true;
         // Get all things associated with extra config
-        exclusions_file = new File(customConfig.getModuleFolder(), "Exclusions.yml");
-        try {
-            exclusions = YamlConfiguration.loadConfiguration(exclusions_file);
-        } catch (Throwable t) {
-            logger.severe(MODULE_NAME + "Unable to load Exclusions.yml! Exiting...");
-            return;
-        }
-
+        exclusions = configManager.getModuleConfig("Exclusions.yml");
         if (exclusions.getConfigurationSection("ex_regions") != null) {
             Map<String, Object> temp = exclusions.getConfigurationSection("ex_regions").getValues(false);
             for (Map.Entry<String, Object> entry : temp.entrySet())
@@ -94,18 +88,13 @@ public class DeathCharge implements ModuleBase, Listener {
     }
 
     public void disableModule() {
-        save();
-        status = false;
-    }
-
-    private void save() {
-        exclusions.set("ex_regions", excludedRegions);
-        exclusions.set("ex_worlds", excludedWorlds);
-        try {
-            exclusions.save(exclusions_file);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (exclusions != null) {
+            exclusions.set("ex_regions", excludedRegions);
+            exclusions.set("ex_worlds", excludedWorlds);
+            plugin.getModuleConfigManager(this).saveModuleConfig(exclusions);
         }
+        status = false;
+        isPercent = false;
     }
 
     @CMD(command = "deathcharge",
@@ -181,13 +170,13 @@ public class DeathCharge implements ModuleBase, Listener {
         // Add support for amounts / percentages
         if (isPercent)
             lost = (charge / 100) * economy.getBalance(p.getName());
-        // They have enough money for the charge
+            // They have enough money for the charge
         else if (economy.getBalance(p.getName()) > charge)
             lost = charge;
-        // Drain all the money they have
+            // Drain all the money they have
         else if (config.getBoolean("drain"))
             lost = economy.getBalance(p.getName());
-
+        // Check if we're actually going to be taking anything
         if (lost != -1) {
             String message = ChatColor.YELLOW + MODULE_NAME +
                     deathMessage.replace("{AMOUNT}", String.format("%.2f", lost));
