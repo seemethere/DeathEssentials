@@ -41,7 +41,7 @@ public class ConfigManager {
         File dataFolder = plugin.getDataFolder();
         if (!dataFolder.exists())
             dataFolder.mkdir();
-        File moduleFolder = new File(dataFolder + "/modules" + dir);
+        File moduleFolder = new File(dataFolder + dir);
         this.moduleFolder = moduleFolder;
         if (!moduleFolder.exists()) {
             moduleFolder.mkdirs();
@@ -168,9 +168,9 @@ public class ConfigManager {
         if (!file.exists()) try {
             InputStream input = plugin.getResource(resource);
             if (input == null) {
-                logger.severe("[" + name + "] Resource '" + resource +
-                        "' not found! Contact author for help! Unplugging module!");
-                plugin.getModuleManager().unplugModule(name);
+//                logger.severe("[" + name + "] Resource '" + resource +
+//                        "' not found! Contact author for help! Unplugging module!");
+//                plugin.getModuleManager().unplugModule(name);
                 return true;
             }
             logger.info("[" + name + "] Creating default config file '" + fileName + "'");

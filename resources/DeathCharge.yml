@@ -10,7 +10,7 @@
 # Use no sign if you would like to charge
 # an amount
 #
-# NOTE: Must be in quotation marks
+#    IMPORTANT: Must be in quotation marks
 #
 # Example:
 #    amount: "5.00%"

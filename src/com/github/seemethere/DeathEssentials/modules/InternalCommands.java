@@ -122,7 +122,7 @@ public class InternalCommands implements ModuleBase {
         if (plugin.getModuleManager().findModule(call.args[1]) != null) {
             ModuleInfo moduleinfo = plugin.getModuleManager().getModuleInfo(call.args[1]);
             boolean enabled = plugin.getModuleManager().findModule(call.args[1]).isEnabled();
-            call.reply("    &7-=-=- %s%s&7 -=-=-", enabled ? ChatColor.GREEN : ChatColor.RED, moduleinfo.name());
+            call.reply("    &7}-=-=-{ %s%s&7 }-=-=-{", enabled ? ChatColor.GREEN : ChatColor.RED, moduleinfo.name());
             if (moduleinfo.NoDisable())
                 call.reply("&4Cannot be disabled");
             call.reply("&3Description: \n&6%s", moduleinfo.description());
@@ -146,7 +146,7 @@ public class InternalCommands implements ModuleBase {
             permission = ADMIN_PERM,
             AllowConsole = true)
     public void sub_list(CallInfo call) {
-        call.reply("    &7-=-=- &6Modules &7-=-=-");
+        call.reply("    &7}-=-=-{ &6Modules &7}-=-=-{");
         Map<String, ModuleBase> modules = plugin.getModuleList();
         for (String s : modules.keySet()) {
             String isEnabled = modules.get(s).isEnabled() ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled";

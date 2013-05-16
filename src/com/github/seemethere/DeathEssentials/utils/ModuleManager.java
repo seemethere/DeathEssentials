@@ -2,14 +2,12 @@ package com.github.seemethere.DeathEssentials.utils;
 
 
 import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
-import com.github.seemethere.DeathEssentials.modules.DeathBan;
-import com.github.seemethere.DeathEssentials.modules.DeathCharge;
-import com.github.seemethere.DeathEssentials.modules.InternalCommands;
-import com.github.seemethere.DeathEssentials.modules.TestModule;
+import com.github.seemethere.DeathEssentials.modules.*;
 import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
@@ -41,6 +39,7 @@ public class ModuleManager {
         addModule(new TestModule());
         addModule(new DeathCharge());
         addModule(new DeathBan());
+        addModule(new KDR());
     }
 
     private void addModule(ModuleBase module) {
@@ -164,7 +163,7 @@ public class ModuleManager {
                 moduleConfigs.remove(module);
             // Unregister events, if any
             if (module instanceof Listener)
-                plugin.unregisterEvents((Listener) module);
+                HandlerList.unregisterAll((Listener) module);
             // Unregister commands for class
             commandManager.unregister(module.getClass());
             logger.info("[" + info.name() + "] " + info.name() + " has been disabled!");

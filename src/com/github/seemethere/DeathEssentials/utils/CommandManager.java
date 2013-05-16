@@ -159,7 +159,7 @@ public class CommandManager {
         if (method == null)
             return;
         CMD command = method.getAnnotation(CMD.class);
-        if (args.length > 0) {
+        if (args.length > 0 && !command.hasArgs()) {
             if (!subCommandHandler(name, info))
                 info.reply(command.usage());
             return;

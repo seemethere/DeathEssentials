@@ -66,6 +66,22 @@ public @interface CMD {
      */
     boolean AllowConsole() default true;
 
+    /**
+     * Indicates if a base command has an argument variable
+     * that cannot be handled through the use of a subcommand
+     *    \IE a name or a player's name/
+     * EXAMPLE:
+     *         /kill *player*
+     *
+     * @return Does the base command have arguments
+     */
+    boolean hasArgs() default false;
+
+    //==================================================================
+    //
+    //                          \SUBCOMMAND/
+    //
+    //==================================================================
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     @interface SUB {

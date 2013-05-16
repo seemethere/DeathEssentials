@@ -106,7 +106,7 @@ public class DeathBan implements ModuleBase, Listener {
         // Players who can bypass the plugin
         if (p.hasPermission("deathban.bypass"))
             return;
-        bannedPlayers.put(p.getName(), System.currentTimeMillis());
+        bannedPlayers.put(p.getName(), System.currentTimeMillis() + banTime);
         // Check to see if they actually want to broadcast the message
         if (config.getBoolean("BroadcastDeath")) {
             String broadcast_msg = ChatColor.translateAlternateColorCodes('&', "&4[DeathBan]&e " + broadcastMessage.
@@ -125,11 +125,11 @@ public class DeathBan implements ModuleBase, Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player p = event.getPlayer();
         if (bannedPlayers.containsKey(p.getName())) {
-            Long millisElapsed = System.currentTimeMillis() - bannedPlayers.get(p.getName());
-            if (millisElapsed < banTime) {
+            long unbanTime = bannedPlayers.get(p.getName());
+            if (unbanTime > System.currentTimeMillis()) {
                 // Display amount of time left on ban
                 String message = String.format("&4%s&e\n%s", MODULE_NAME, kickMessage);
-                message = message.replace("{TIME}", TimeUtil.timeToString(banTime - millisElapsed));
+                message = message.replace("{TIME}", TimeUtil.timeToString(unbanTime - System.currentTimeMillis()));
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
                         ChatColor.translateAlternateColorCodes('&', message));
             } else {

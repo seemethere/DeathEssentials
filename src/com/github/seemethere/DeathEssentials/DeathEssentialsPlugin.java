@@ -72,15 +72,6 @@ public class DeathEssentialsPlugin extends JavaPlugin {
         return version;
     }
 
-    /**
-     * Used to unregister any events associated with a module
-     *
-     * @param listener Module itself
-     */
-    public void unregisterEvents(Listener listener) {
-        HandlerList.unregisterAll(listener);
-    }
-
     public ConfigManager getModuleConfigManager(ModuleBase module) {
         return this.getModuleManager().getModuleConfigManager(module);
     }
