@@ -1,20 +1,13 @@
 package com.github.seemethere.DeathEssentials.utils.module;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 
 public interface ModuleBase {
-    /**
-     * True = Plugged
-     * False = Unplugged
-     *
-     * @return Status of module.
-     */
-    boolean isEnabled();
 
     /**
      * Enables module
      */
-    abstract void enableModule(DeathEssentialsPlugin plugin, String name);
+    abstract void enableModule(ModularPlugin plugin, String name);
 
     /**
      * Disables module

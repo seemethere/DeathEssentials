@@ -3,7 +3,7 @@ package com.github.seemethere.DeathEssentials.utils.commonutils;
 import java.util.*;
 
 public class ModuleUtil {
-    public static <K extends Comparable, V extends Comparable>Map<K, V> sortByValues(Map<K, V> map) {
+    public static <K extends Comparable, V extends Comparable> Map<K, V> sortByValues(Map<K, V> map) {
         List<Map.Entry<K, V>> entries = new LinkedList<Map.Entry<K, V>>(map.entrySet());
         Collections.sort(entries, new Comparator<Map.Entry<K, V>>() {
             @Override
@@ -12,7 +12,7 @@ public class ModuleUtil {
             }
         });
         Map<K, V> sortedMap = new TreeMap<K, V>(Collections.reverseOrder());
-        for (Map.Entry<K,V> entry : entries) {
+        for (Map.Entry<K, V> entry : entries) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
         return sortedMap;

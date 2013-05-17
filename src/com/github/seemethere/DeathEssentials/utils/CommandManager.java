@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.utils;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commands.InvalidCommandArgumentsException;
@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class CommandManager {
-    private DeathEssentialsPlugin plugin;
+    private ModularPlugin plugin;
     private Map<Method, Object> instances;
     private Logger logger;
     private Map<String, Method> commands;
@@ -25,7 +25,7 @@ public class CommandManager {
     private Map<String, CCommand> commandMap;
     private List<String> subcommandMap;
 
-    public CommandManager(DeathEssentialsPlugin plugin) {
+    public CommandManager(ModularPlugin plugin) {
         this.plugin = plugin;
         commands = new HashMap<String, Method>();
         instances = new HashMap<Method, Object>();

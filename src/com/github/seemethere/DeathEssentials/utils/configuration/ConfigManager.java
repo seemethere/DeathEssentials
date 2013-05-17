@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.utils.configuration;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -20,7 +20,7 @@ public class ConfigManager {
 
     private final File moduleFolder;
     private final String fileName;
-    private final DeathEssentialsPlugin plugin;
+    private final ModularPlugin plugin;
     private final Logger logger;
     private final String name;
     private File configFile;
@@ -29,7 +29,7 @@ public class ConfigManager {
     private YamlConfiguration fileConfiguration;
     private double version;
 
-    public ConfigManager(DeathEssentialsPlugin plugin, String dir, String name) {
+    public ConfigManager(ModularPlugin plugin, String dir, String name) {
         if (plugin == null)
             throw new IllegalArgumentException("plugin cannot be null");
         if (!plugin.isInitialized())
@@ -51,7 +51,7 @@ public class ConfigManager {
         fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
         version = fileConfiguration.getDouble("version");
         customFiles = new HashMap<String, File>();
-        customConfigs =  new HashMap<YamlConfiguration, File>();
+        customConfigs = new HashMap<YamlConfiguration, File>();
     }
 
     //========================================================
@@ -113,7 +113,7 @@ public class ConfigManager {
             }
             return;
         }
-        plugin.getLogger().severe("[" + name +"] Config '" + inConfig.getName() + "' could not be saved because it " +
+        plugin.getLogger().severe("[" + name + "] Config '" + inConfig.getName() + "' could not be saved because it " +
                 "was not registered with the config manager");
     }
 

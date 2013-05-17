@@ -69,9 +69,9 @@ public @interface CMD {
     /**
      * Indicates if a base command has an argument variable
      * that cannot be handled through the use of a subcommand
-     *    \IE a name or a player's name/
+     * \IE a name or a player's name/
      * EXAMPLE:
-     *         /kill *player*
+     * /kill *player*
      *
      * @return Does the base command have arguments
      */

@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.utils.module;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -10,14 +10,14 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.logging.Logger;
 
 public final class ModuleDependencies {
-    private static DeathEssentialsPlugin plugin;
+    private static ModularPlugin plugin;
     private static Logger logger;
     private static RegisteredServiceProvider<Economy> economy = null;
     private static RegisteredServiceProvider<Permission> permission = null;
     private static RegisteredServiceProvider<Chat> chat = null;
 
 
-    public ModuleDependencies(DeathEssentialsPlugin plugin) {
+    public ModuleDependencies(ModularPlugin plugin) {
         ModuleDependencies.plugin = plugin;
         logger = plugin.getLogger();
         economy = plugin.getServer().getServicesManager().getRegistration(Economy.class);
