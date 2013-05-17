@@ -1,13 +1,9 @@
 package com.github.seemethere.DeathEssentials;
 
-import com.github.seemethere.DeathEssentials.utils.ModuleManager;
+import com.github.seemethere.DeathEssentials.modules.*;
 import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleDependencies;
-import org.bukkit.Server;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Map;
@@ -16,17 +12,17 @@ import java.util.logging.Logger;
 /**
  * @author seemethere
  */
-public class DeathEssentialsPlugin extends JavaPlugin {
+public class ModularPlugin extends JavaPlugin {
     private static final double version = 1.0;
     private ModuleManager moduleManager;
-    private ModuleDependencies dependencies;
     private Logger logger;
 
     public void onEnable() {
         this.saveDefaultConfig();
         logger = this.getLogger();
-        dependencies = new ModuleDependencies(this);
+        new ModuleDependencies(this);
         moduleManager = new ModuleManager(this);
+        setModuleList();
         // Initial plug of modules
         for (String s : moduleManager.getModuleList().keySet()) {
             if (moduleManager.getInitialStatus().containsKey(s) &&
@@ -41,10 +37,30 @@ public class DeathEssentialsPlugin extends JavaPlugin {
 
     public void onDisable() {
         // Unplugging of modules for safe exit
-        for (String s : moduleManager.getModuleList().keySet())
-            if (moduleManager.getModuleList().get(s).isEnabled())
+        for (String s : moduleManager.getModuleList().keySet()) {
+            ModuleBase module = moduleManager.findModule(s);
+            if (moduleManager.isEnabled(module)) {
                 moduleManager.unplugModule(s, true);
+            }
+        }
         logger.info("DeathEssentials has been disabled");
+    }
+
+    protected void setModuleList() {
+        addModule(new InternalCommands());
+        addModule(new TestModule());
+        addModule(new DeathCharge());
+        addModule(new DeathBan());
+        addModule(new KDR());
+    }
+
+    /**
+     * For public use, allows a developer to add a module directly from the ModularPlugin base
+     *
+     * @param module Module to be added
+     */
+    public void addModule(ModuleBase module) {
+        moduleManager.addModule(module);
     }
 
     /**
@@ -52,13 +68,6 @@ public class DeathEssentialsPlugin extends JavaPlugin {
      */
     public ModuleManager getModuleManager() {
         return moduleManager;
-    }
-
-    /**
-     * @return Dependencies
-     */
-    public ModuleDependencies getDependencies() {
-        return dependencies;
     }
 
     /**

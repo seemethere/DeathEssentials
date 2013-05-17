@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.modules;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleBase;
 import com.github.seemethere.DeathEssentials.utils.module.ModuleInfo;
 import org.bukkit.event.EventHandler;
@@ -12,18 +12,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
         description = "Displays effects on player death",
         version = 0.1)
 public class DeathEffects implements ModuleBase, Listener {
-    private static boolean status = false;
 
-    public boolean isEnabled() {
-        return status;
-    }
+    public void enableModule(ModularPlugin plugin, String name) {
 
-    public void enableModule(DeathEssentialsPlugin plugin, String name) {
-        status = true;
     }
 
     public void disableModule() {
-        status = false;
+
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

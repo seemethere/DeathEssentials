@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.modules;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
@@ -17,21 +17,14 @@ public class InternalCommands implements ModuleBase {
     //Permission node for admin commands
     private static final String ADMIN_PERM = "deathessentials.admin";
     private static final String PLUGIN_NAME = ChatColor.GRAY + "[DeathEssentials] " + ChatColor.AQUA;
-    private static boolean status = false;
-    private DeathEssentialsPlugin plugin;
+    private ModularPlugin plugin;
 
-    public boolean isEnabled() {
-        return status;
-    }
-
-    public void enableModule(DeathEssentialsPlugin plugin, String name) {
-        status = true;
+    public void enableModule(ModularPlugin plugin, String name) {
         this.plugin = plugin;
     }
 
     public void disableModule() {
         plugin = null;
-        status = false;
     }
 
     @CMD(command = "deathessentials",
@@ -101,7 +94,8 @@ public class InternalCommands implements ModuleBase {
             AllowConsole = true)
     public void sub_reload(CallInfo call) {
         if (plugin.getModuleManager().findModule(call.args[1]) != null) {
-            if (plugin.getModuleManager().findModule(call.args[1]).isEnabled()) {
+            ModuleBase module = plugin.getModuleManager().findModule(call.args[1]);
+            if (plugin.getModuleManager().isEnabled(module)) {
                 plugin.getModuleManager().unplugModule(call.args[1]);
                 plugin.getModuleManager().plugModule(call.args[1]);
                 call.reply("%s%s &ahas been reloaded!", PLUGIN_NAME, call.args[1]);
@@ -121,7 +115,8 @@ public class InternalCommands implements ModuleBase {
     public void sub_info(CallInfo call) {
         if (plugin.getModuleManager().findModule(call.args[1]) != null) {
             ModuleInfo moduleinfo = plugin.getModuleManager().getModuleInfo(call.args[1]);
-            boolean enabled = plugin.getModuleManager().findModule(call.args[1]).isEnabled();
+            ModuleBase module = plugin.getModuleManager().findModule(call.args[1]);
+            boolean enabled = plugin.getModuleManager().isEnabled(module);
             call.reply("    &7}-=-=-{ %s%s&7 }-=-=-{", enabled ? ChatColor.GREEN : ChatColor.RED, moduleinfo.name());
             if (moduleinfo.NoDisable())
                 call.reply("&4Cannot be disabled");
@@ -149,14 +144,14 @@ public class InternalCommands implements ModuleBase {
         call.reply("    &7}-=-=-{ &6Modules &7}-=-=-{");
         Map<String, ModuleBase> modules = plugin.getModuleList();
         for (String s : modules.keySet()) {
-            String isEnabled = modules.get(s).isEnabled() ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled";
+            String isEnabled = plugin.getModuleManager().isEnabled(modules.get(s)) ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled";
             ConfigManager configManager = plugin.getModuleConfigManager(modules.get(s));
             boolean hasConfig = configManager != null;
             String needsUpdate = "";
-            if (modules.get(s).isEnabled())
+            if (plugin.getModuleManager().isEnabled(modules.get(s)))
                 if (hasConfig && configManager.needsUpdate())
                     needsUpdate = ChatColor.YELLOW + "(" + ChatColor.AQUA + "U" + ChatColor.YELLOW + ")";
-            call.reply("&7%s: %5s %3s", s,isEnabled, needsUpdate);
+            call.reply("&7%s: %5s %3s", s, isEnabled, needsUpdate);
         }
     }
 

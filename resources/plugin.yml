@@ -1,6 +1,5 @@
 name: DeathEssentials
 version: $version$
-main: com.github.seemethere.DeathEssentials.DeathEssentialsPlugin
-author: seemethere
+main: com.github.seemethere.DeathEssentials.ModularPlugin
 depend: [Vault]
 softdepend: [WorldGuard]

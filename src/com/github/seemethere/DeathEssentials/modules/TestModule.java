@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.modules;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.configuration.ConfigManager;
@@ -34,7 +34,7 @@ public class TestModule implements ModuleBase, Listener {
         return status;
     }
 
-    public void enableModule(DeathEssentialsPlugin plugin, String name) {
+    public void enableModule(ModularPlugin plugin, String name) {
         status = true;
         logger = plugin.getLogger();
         configAcc = plugin.getModuleConfigManager(this);

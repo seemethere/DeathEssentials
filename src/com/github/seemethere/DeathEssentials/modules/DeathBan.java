@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.modules;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commonutils.TimeUtil;
@@ -16,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +27,7 @@ import java.util.Map;
         version = 0.6,
         HasConfig = true)
 public class DeathBan implements ModuleBase, Listener {
-    private static boolean status = false;
-    private DeathEssentialsPlugin plugin;
+    private ModularPlugin plugin;
     private YamlConfiguration config = null;
     private YamlConfiguration banned_config;
     private String MODULE_NAME;
@@ -38,12 +36,7 @@ public class DeathBan implements ModuleBase, Listener {
     private String kickMessage;
     private String broadcastMessage;
 
-    public boolean isEnabled() {
-        return status;
-    }
-
-    public void enableModule(DeathEssentialsPlugin plugin, String name) {
-        status = true;
+    public void enableModule(ModularPlugin plugin, String name) {
         this.plugin = plugin;
         MODULE_NAME = "[" + name + "] ";
         bannedPlayers = new HashMap<String, Long>();
@@ -64,7 +57,6 @@ public class DeathBan implements ModuleBase, Listener {
             banned_config.set("BannedPlayers", bannedPlayers);
             plugin.getModuleConfigManager(this).saveModuleConfig(banned_config);
         }
-        status = false;
     }
 
     @CMD(command = "deathban",

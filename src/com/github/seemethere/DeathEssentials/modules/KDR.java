@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.modules;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commonutils.ModuleUtil;
@@ -21,25 +21,18 @@ import java.util.Map;
         description = "Counts the number of kills and deaths of every player",
         HasConfig = true)
 public class KDR implements ModuleBase, Listener {
-    private static boolean status = false;
     private ConfigManager manager;
     private YamlConfiguration config;
     private YamlConfiguration storage;
 
-    public boolean isEnabled() {
-        return status;
-    }
-
-    public void enableModule(DeathEssentialsPlugin plugin, String name) {
+    public void enableModule(ModularPlugin plugin, String name) {
         manager = plugin.getModuleConfigManager(this);
         config = manager.getConfig();
         storage = manager.getModuleConfig("KDR_Storage.yml");
-        status = true;
     }
 
     public void disableModule() {
         manager.saveModuleConfig(storage);
-        status = false;
     }
 
     @CMD(command = "kdr",
@@ -95,7 +88,7 @@ public class KDR implements ModuleBase, Listener {
         iter = createMap(keys, value);
         iter = ModuleUtil.sortByValues(iter);
         i = 1;
-        for(String s : iter.keySet()) {
+        for (String s : iter.keySet()) {
             call.reply("%d. %s %s %.2f", i++, s, delim, iter.get(s));
         }
     }

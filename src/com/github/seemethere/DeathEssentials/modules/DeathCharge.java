@@ -1,6 +1,6 @@
 package com.github.seemethere.DeathEssentials.modules;
 
-import com.github.seemethere.DeathEssentials.DeathEssentialsPlugin;
+import com.github.seemethere.DeathEssentials.ModularPlugin;
 import com.github.seemethere.DeathEssentials.utils.commands.CMD;
 import com.github.seemethere.DeathEssentials.utils.commands.CallInfo;
 import com.github.seemethere.DeathEssentials.utils.commonutils.RegionUtil;
@@ -33,8 +33,7 @@ import java.util.logging.Logger;
         Economy = true,
         HasConfig = true)
 public class DeathCharge implements ModuleBase, Listener {
-    private static boolean status = false;
-    private DeathEssentialsPlugin plugin;
+    private ModularPlugin plugin;
     private Logger logger;
     private String MODULE_NAME;
     private String deathMessage;
@@ -46,14 +45,9 @@ public class DeathCharge implements ModuleBase, Listener {
     private double charge;
     private List<String> excludedWorlds;
 
-    public boolean isEnabled() {
-        return status;
-    }
-
-    public void enableModule(DeathEssentialsPlugin plugin, String name) {
+    public void enableModule(ModularPlugin plugin, String name) {
         MODULE_NAME = "[" + name + "] ";
         this.plugin = plugin;
-        status = true;
         excludedRegions = new HashMap<String, String>();
         excludedWorlds = new ArrayList<String>();
         logger = plugin.getLogger();
@@ -93,7 +87,6 @@ public class DeathCharge implements ModuleBase, Listener {
             exclusions.set("ex_worlds", excludedWorlds);
             plugin.getModuleConfigManager(this).saveModuleConfig(exclusions);
         }
-        status = false;
         isPercent = false;
     }
 
